@@ -1,0 +1,26 @@
+import ISIL.math;
+import ISIL.io;
+import ISIL.lang;
+
+Programme L3_ISIL_A
+PDec
+// Declaration des variables
+Integer X|Y|Z;
+Float A;
+Integer Tab[10];
+final Integer U=10;
+final Float U=10;
+InDebut
+# Partie Instruction
+X=-5;
+Y=+2;
+Z = 54 + 4 - 5;
+Input("hey there");
+Input("hey there d",X);
+Write ("hey sam");
+Write ("hey sam",X);
+// one line comment
+/* ceci est 
+un commentaire
+isil A */
+InFin
