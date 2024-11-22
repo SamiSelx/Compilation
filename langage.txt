@@ -18,12 +18,11 @@ InDebut
 //Write ("hey sam");
 //Write ("hey sam",X);
 
-for(X<-7;X<7;X++)
-do 
-X=-5;
-//Y=+2;
-//Z = 54 + 4 - 5;
-endfor
+if(X==4 || Y==5)do
+X=7;
+else 
+Y=8;
+endif
 
 // one line comment
 /* ceci est 
