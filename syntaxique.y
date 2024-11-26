@@ -12,8 +12,9 @@ Lib: mc_Math | mc_lang |mc_io;
 Programme: mc_prog idf Dec Corps;
 Dec: mc_dec List_dec;
 List_dec:  Type_dec List_dec |;
-Type_dec: Type List_idf | Type idf '[' cst ']' pvg |mc_const Type idf '=' Constant pvg | Comment ;
+Type_dec: Type List_idf | Type List_tab |mc_const Type idf '=' Constant pvg | Comment ;
 List_idf: idf '|' List_idf | idf pvg;
+List_tab:idf '[' cst ']' '|' List_tab| idf '[' cst ']'  pvg;
 Type: mc_integer | mc_float;
 
 Corps: mc_debut List_inst mc_fin;
@@ -21,7 +22,7 @@ List_inst: Inst_aff List_inst | Comment List_inst | Inst_lecture List_inst| Inst
 Inst_lecture: mc_input '(' string ')' pvg | mc_input '(' string ',' List_idf_io')' pvg;
 Inst_write: mc_write '(' string ')' pvg | mc_write '(' string ',' List_idf_io ')' pvg;
 List_idf_io: idf ',' List_idf_io | idf;
-Inst_aff: idf affectation Operation pvg;
+Inst_aff: idf affectation Operation pvg| idf '[' cst ']' affectation Operation pvg;
 Operation: Value Op_arithmetiques Operation | Value ;
 Value: idf | Constant;
 
