@@ -17,6 +17,7 @@ List_idf: idf '|' List_idf | idf pvg;
 List_tab:idf '[' cst ']' '|' List_tab| idf '[' cst ']'  pvg;
 Type: mc_integer | mc_float;
 
+
 Corps: mc_debut List_inst mc_fin;
 List_inst: Inst_aff List_inst | Comment List_inst | Inst_lecture List_inst| Inst_write List_inst | Inst_for List_inst |Inst_if List_inst | ;
 Inst_lecture: mc_input '(' string ')' pvg | mc_input '(' string ',' List_idf_io')' pvg;
