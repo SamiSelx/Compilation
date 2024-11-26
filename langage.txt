@@ -11,6 +11,7 @@ Integer Tab[10];
 final Integer U=10;
 final Float U=10;
 Integer T[10]|A[10];
+
 InDebut
 # Partie Instruction
 
