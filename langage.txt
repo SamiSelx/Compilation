@@ -12,13 +12,21 @@ final Integer U=10;
 final Float U=10;
 InDebut
 # Partie Instruction
-X=-5;
-Y=+2;
-Z = 54 + 4 - 5;
-Input("hey there");
-Input("hey there d",X);
+
+//Input("hey there");
+//Input("hey there d",X);
+//Write ("hey sam");
+//Write ("hey sam",X);
+
+if(X>7 || Y!=6 && Z>=8)do
+X<-6*7*5/9;
+Y<-6*X;
 Write ("hey sam");
-Write ("hey sam",X);
+Input("hey there");
+else 
+Y<-8;
+endif
+
 // one line comment
 /* ceci est 
 un commentaire
