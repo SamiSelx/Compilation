@@ -20,7 +20,7 @@ InDebut
 
 if(X>7 || Y!=6 && Z>=8)do
 X<-6*7*5/9;
-Y<-6*X;
+Y<- 6 + X - 1; 
 Write ("hey sam");
 Input("hey there");
 else 

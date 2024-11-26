@@ -1,5 +1,6 @@
 %{
 #include "syntaxique.tab.h"   
+#include "TS.h"
 int nb_ligne = 1;
 %}
 lettre [a-zA-Z]
@@ -9,7 +10,10 @@ cst {chiffre}+
 cstSigne (\+|\-){chiffre}+
 reel {chiffre}+"."+{chiffre}+
 %%
-import return mc_import;
+import  {
+    inserer(yytext,"mot cle","","",2);
+    return mc_import;
+}
 ISIL.math return mc_Math;
 ISIL.lang return mc_lang;
 ISIL.io return mc_io;
@@ -49,6 +53,7 @@ endif return mc_endif;
 if (yyleng > 18) {
 printf("Erreur:'%s' depasser 18 caracteres a la ligne %d\n", yytext, nb_ligne);
 } else {
+    inserer(yytext,"idf","","",1);
 return idf;
 }
 }
