@@ -19,13 +19,21 @@ InDebut
 //Write ("hey sam",X);
 
 if(X>7 || Y!=6 && Z>=8)do
-X<-6*7*5/9;
-Y<-6*X;
+X<-- 6*7*5/9;
+Y<-- 6*X;
 Write ("hey sam");
 Input("hey there");
 else 
-Y<-8;
+Y<-- 8;
 endif
+
+
+for(X<-- 7;X<7;X--)
+do 
+X<-- -5;
+Y<-- +2;
+Z <-- 54 + 4 - 5;
+endfor
 
 // one line comment
 /* ceci est 

@@ -35,6 +35,7 @@ endif return mc_endif;
 \/\*([^*]|\*+[^\/])*\*\/ return mc_cmnt_multi;
 ; return pvg;
 "++" return inc;
+"--" return dec;
 "<--" return affectation;
 \>= return sup_ou_egal;
 \<= return inf_ou_egal;
