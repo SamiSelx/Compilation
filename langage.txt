@@ -10,6 +10,7 @@ Float A;
 Integer Tab[10];
 final Integer U=10;
 final Float U=10;
+Integer T[10]|A[10];
 InDebut
 # Partie Instruction
 
@@ -18,9 +19,11 @@ InDebut
 //Write ("hey sam");
 //Write ("hey sam",X);
 
+
 if(X>7 || Y!=6 && Z>=8)do
 X<-- 6*7*5/9;
 Y<-- 6*X;
+T[10]<-- 6*7*5/9;
 Write ("hey sam");
 Input("hey there");
 else 
