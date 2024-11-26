@@ -12,9 +12,9 @@ Lib: mc_Math | mc_lang |mc_io;
 Programme: mc_prog idf Dec Corps;
 Dec: mc_dec List_dec;
 List_dec:  Type_dec List_dec |;
-Type_dec: Type List_idf | Type List_tab |mc_const Type idf '=' Constant pvg | Comment ;
-List_idf: idf '|' List_idf | idf pvg;
-List_tab:idf '[' cst ']' '|' List_tab| idf '[' cst ']'  pvg;
+Type_dec: Type List_idf |mc_const Type idf '=' Constant pvg | Comment ;
+List_idf: Var '|' List_idf |Var pvg;
+Var :idf | idf '[' cst ']' 
 Type: mc_integer | mc_float;
 
 
