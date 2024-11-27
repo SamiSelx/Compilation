@@ -8,7 +8,9 @@ chiffre [0-9]
 IDF [A-Z]({lettre}|{chiffre}|[_]({lettre}|{chiffre}))*
 cst {chiffre}+
 cstSigne (\+|\-){chiffre}+
+reelSigne (\+|\-){chiffre}+"."+{chiffre}+
 reel {chiffre}+"."+{chiffre}+
+
 %%
 import  {
     inserer(yytext,"mot cle","","",2);
@@ -91,10 +93,11 @@ endif {
 \/\*([^*]|\*+[^\/])*\*\/  return mc_cmnt_multi;
 ; return pvg;
 "++" return inc;
-"<-" return affectation;
+"--" return dec;
+"<--" return affectation;
 \>= return sup_ou_egal;
 \<= return inf_ou_egal;
-\== return egal;
+"==" return egal;
 \!= return diff;
 \&\& return mc_et;
 "||" return mc_ou;
@@ -114,6 +117,7 @@ endif {
           yylval.entier=atoi(yytext);
           return reel;
 }
+{reelSigne} return reelSigne;
 ["][^\n^\"]*["] return string;
 {IDF} {
 if (yyleng > 18) {
