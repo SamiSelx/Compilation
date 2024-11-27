@@ -203,7 +203,7 @@ void inserer(char nomEntite[], char codeEntite[], char type[], char val[], int y
 
 void affiche()
 {
-    printf("/***************Table des symboles IDF*************/\n");
+    printf("\n\n/***************Table des symboles IDF*************/\n");
     printf("____________________________________________________________________\n");
     printf("\t| Nom_Entite |  Code_Entite | Type_Entite | Val_Entite\n");
     printf("____________________________________________________________________\n");
