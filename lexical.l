@@ -7,7 +7,9 @@ chiffre [0-9]
 IDF [A-Z]({lettre}|{chiffre}|[_]({lettre}|{chiffre}))*
 cst {chiffre}+
 cstSigne (\+|\-){chiffre}+
+reelSigne (\+|\-){chiffre}+"."+{chiffre}+
 reel {chiffre}+"."+{chiffre}+
+
 %%
 import return mc_import;
 ISIL.math return mc_Math;
@@ -33,10 +35,11 @@ endif return mc_endif;
 \/\*([^*]|\*+[^\/])*\*\/ return mc_cmnt_multi;
 ; return pvg;
 "++" return inc;
-"<-" return affectation;
+"--" return dec;
+"<--" return affectation;
 \>= return sup_ou_egal;
 \<= return inf_ou_egal;
-\== return egal;
+"==" return egal;
 \!= return diff;
 \&\& return mc_et;
 "||" return mc_ou;
@@ -44,6 +47,7 @@ endif return mc_endif;
 {cst} return cst;
 {cstSigne} return cstSigne;
 {reel} return reel;
+{reelSigne} return reelSigne;
 ["][^\n^\"]*["] return string;
 {IDF} {
 if (yyleng > 18) {
