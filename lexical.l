@@ -2,13 +2,13 @@
 #include "syntaxique.tab.h"   
 #include "TS.h"
 int nb_ligne = 1;
+extern YYSTYPE yylval;
 %}
 lettre [a-zA-Z]
 chiffre [0-9]
 IDF [A-Z]({lettre}|{chiffre}|[_]({lettre}|{chiffre}))*
-cst {chiffre}+
-cstSigne (\+|\-){chiffre}+
-reel {chiffre}+"."+{chiffre}+
+cst (\+|\-)?{chiffre}+
+reel (\+|\-)?{chiffre}+"."+{chiffre}+
 %%
 import  {
     inserer(yytext,"mot cle","","",2);
@@ -45,14 +45,20 @@ endif return mc_endif;
 \&\& return mc_et;
 "||" return mc_ou;
 [\[\]\,\|\+\-\*\/\(\)\<\>\=\!] return yytext[0];
-{cst} return cst;
-{cstSigne} return cstSigne;
-{reel} return reel;
+{cst} {
+    yylval.entier = atoi(yytext);
+    return cst;
+}
+{reel} {
+    yylval.numvrg = atof(yytext);
+    return reel;
+}
 ["][^\n^\"]*["] return string;
 {IDF} {
 if (yyleng > 18) {
 printf("Erreur:'%s' depasser 18 caracteres a la ligne %d\n", yytext, nb_ligne);
 } else {
+    yylval.str = strdup(yytext);
     inserer(yytext,"idf","","",1);
 return idf;
 }
