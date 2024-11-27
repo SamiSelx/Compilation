@@ -14,7 +14,7 @@ Integer T[10]|A[10];
 
 InDebut
 # Partie Instruction
-Y<- 6 + X - 1 + 4 - 7 * 4 + X + 1.5; 
+Y<-- 6 + X - 1 + 4 - 7 * 4 + X + +1.5; 
 //Input("hey there");
 //Input("hey there d",X);
 //Write ("hey sam");
@@ -22,9 +22,9 @@ Y<- 6 + X - 1 + 4 - 7 * 4 + X + 1.5;
 
 
 if(X>7 || Y!=6 && Z>=8)do
-X<-6*7*5/9;
-Y<- 6 + X - 1 + 4 - 7 * 4 + X; 
-Y<- 6 + X - 1; 
+X<-- 6*7*5/9;
+Y<-- 6 + X - 1 + 4 - 7 * 4 + X; 
+Y<-- 6 + X - 1; 
 X<-- 6*7*5/9;
 Y<-- 6*X;
 T[10]<-- 6*7*5/9;
