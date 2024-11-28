@@ -105,8 +105,13 @@ endif {
           return yytext[0];
 }
 {cst} {
-          yylval.entier=atoi(yytext);
-          return cst;
+    int number = atoi(yytext);
+        if(!(atoi(yytext) >= -32768 && atoi(yytext) <= 32767)){
+            printf("Erreur: '%d' doit etre entre -32768 et 32767\n",number);
+        }else{
+            yylval.entier=atoi(yytext);
+            return cst;
+        }
 }
 {reel} {
           yylval.numvrg=atoi(yytext);

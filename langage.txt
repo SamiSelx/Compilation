@@ -19,7 +19,7 @@ Y<-- 6 + X - 1 + 4 - 7 * 4 + X + +1.5;
 //Input("hey there d",X);
 //Write ("hey sam");
 //Write ("hey sam",X);
-
+X<-- 3276;
 
 if(X>7 || Y!=6 && Z>=8)do
 X<-- 6*7*5/9;

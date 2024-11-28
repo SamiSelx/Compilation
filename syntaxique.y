@@ -56,6 +56,6 @@ Op_arithmetiques: '-' | '+' | '*' | '/';
 %%
 main(){
     yyparse();
-    /* affiche(); */
+    affiche();
 }
 yywrap(){}
