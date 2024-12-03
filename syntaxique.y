@@ -1,5 +1,13 @@
 %start S
-%token  mc_import mc_Math  mc_io mc_lang pvg mc_prog mc_dec mc_integer mc_float mc_const  idf mc_debut mc_fin mc_input mc_write cst cstSigne reel string mc_cmnt_one_line mc_cmnt_one_line2 mc_cmnt_multi mc_for mc_endfor mc_do inc  affectation mc_if mc_endif mc_else  sup_ou_egal inf_ou_egal egal diff mc_ou mc_et reelSigne dec
+%union{
+    int entier;
+    char* str;
+    float numvrg;
+}
+
+%token  mc_import mc_Math  mc_io mc_lang pvg mc_prog mc_dec mc_integer mc_float mc_const  mc_debut mc_fin mc_input mc_write  string mc_cmnt_one_line mc_cmnt_one_line2 mc_cmnt_multi mc_for mc_endfor mc_do inc  affectation mc_if mc_endif mc_else  sup_ou_egal inf_ou_egal egal diff mc_ou mc_et dec
+%token <str>idf <entier>cst <numvrg>reel
+
 %right '='
 %left '+''-'
 %left '*''/'
@@ -29,7 +37,8 @@ Value: idf | Constant;
 
 Comment: Comment_one_line | mc_cmnt_multi;
 Comment_one_line: mc_cmnt_one_line | mc_cmnt_one_line2;
-Constant : cst | cstSigne |reel |reelSigne;
+Constant : cst  | reel ;
+
 
 Inst_for: mc_for '(' Declaration pvg List_Condition pvg Compteur ')' mc_do List_inst mc_endfor ;
 Declaration:idf affectation Value;
@@ -47,5 +56,6 @@ Op_arithmetiques: '-' | '+' | '*' | '/';
 %%
 main(){
     yyparse();
+    affiche();
 }
 yywrap(){}
