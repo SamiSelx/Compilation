@@ -9,6 +9,10 @@ chiffre [0-9]
 IDF [A-Z]({lettre}|{chiffre}|[_]({lettre}|{chiffre}))*
 cst (\+|\-)?{chiffre}+
 reel (\+|\-)?{chiffre}+"."+{chiffre}+
+string ["][^\n^\"]*["]
+commentOneLine (\/\/)[^\n]* 
+commentOneLine2 (#)[^\n]* 
+CommentMultiLine (\/\*)([^*]|\*+[^\/])*(\*+\/)
 
 %%
 import  {
@@ -87,9 +91,6 @@ endif {
     inserer(yytext,"mot cle","","",2);
     return mc_endif;
 }
-\/\/[^\n]* return mc_cmnt_one_line;
-\#[^\n]* return mc_cmnt_one_line2;
-\/\*([^*]|\*+[^\/])*\*\/  return mc_cmnt_multi;
 ; return pvg;
 "++" return inc;
 "--" return dec;
@@ -117,7 +118,7 @@ endif {
           yylval.numvrg=atoi(yytext);
           return reel;
 }
-["][^\n^\"]*["] return string;
+{string} return string;
 {IDF} {
 if (yyleng > 18) {
 printf("Erreur:'%s' depasser 18 caracteres a la ligne %d\n", yytext, nb_ligne);
@@ -126,6 +127,13 @@ printf("Erreur:'%s' depasser 18 caracteres a la ligne %d\n", yytext, nb_ligne);
     inserer(yytext,"idf","","",1);
 return idf;
 }
+}
+{commentOneLine} 
+{commentOneLine2}
+{CommentMultiLine} {
+    for (int i = 0; yytext[i] != '\0'; i++) {
+        if (yytext[i] == '\n') nb_ligne++;
+    }
 }
 [ \t]
 \n {nb_ligne++;}
