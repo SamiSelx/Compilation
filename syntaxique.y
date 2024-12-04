@@ -53,7 +53,7 @@ Compteur:idf inc| idf dec;
 
 Inst_if: mc_if '(' List_Condition ')' mc_do List_inst mc_endif|Inst_if_else;
 Inst_if_else: mc_if '(' List_Condition ')' mc_do List_inst mc_else List_inst mc_endif;
-List_Condition: Condition| Condition Op_logiques List_Condition | ;
+List_Condition: Condition| Condition Op_logiques List_Condition ;
 Condition:Value Op_comparaison Value;
 
 

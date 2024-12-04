@@ -131,7 +131,8 @@ return idf;
 {commentOneLine} 
 {commentOneLine2}
 {CommentMultiLine} {
-    for (int i = 0; yytext[i] != '\0'; i++) {
+    int i;
+    for (i = 0; yytext[i] != '\0'; i++) {
         if (yytext[i] == '\n') nb_ligne++;
     }
 }
