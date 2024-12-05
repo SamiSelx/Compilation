@@ -3,6 +3,7 @@ extern int nb_ligne;
 extern int col;
 #include "syntaxique.tab.h"   
 #include "TS.h"
+
 // int nb_ligne = 1;
 extern YYSTYPE yylval;
 %}

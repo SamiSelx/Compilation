@@ -33,6 +33,7 @@ Lib: mc_Math | mc_lang |mc_io;
 Programme: mc_prog idf Dec Corps;
 Dec: mc_dec List_dec;
 List_dec:  Type_dec List_dec |;
+
 // remove | Comment 
 Type_dec:Type List_idf|mc_const Type idf '=' Constant pvg {updateType($3,sauvType); updateConst($3,"oui");} |mc_const Type idf pvg {updateType($3,sauvType);updateConst($3,"oui");};
 List_idf: Var   '|' List_idf |Var pvg;

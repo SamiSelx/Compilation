@@ -267,8 +267,9 @@ void affiche()
     }
     printf("____________________________________\n");
 }
+
 void updateType(char nomEntite[], char newType[]) {
-   
+   //adding search if the type is empty 
     listTs current = t;
     while (current != NULL) {
         if (strcmp(current->info.nomEntite, nomEntite) == 0) {
