@@ -115,7 +115,7 @@ endif {
         }
 }
 {reel} {
-          yylval.numvrg=atoi(yytext);
+          yylval.numvrg=atof(yytext);
           return reel;
 }
 {string} return string;
