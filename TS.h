@@ -7,7 +7,8 @@ typedef struct
     char nomEntite[20];
     char codeEntite[20];
     char type[20];
-    char val[20];
+    char val[20];   // "-":pas de val  
+    char Constant[4]; // non:n'est pas const     oui :cst
 } TypeTs;
 
 typedef struct
@@ -87,7 +88,7 @@ int recherche(char nomEntite[], int y)
     return -1;
 }
 
-void inserer(char nomEntite[], char codeEntite[], char type[], char val[], int y)
+void inserer(char nomEntite[], char codeEntite[], char type[], char val[], char Constant[], int y)
 {
     if (recherche(nomEntite, y) == -1)
     {
@@ -102,6 +103,7 @@ void inserer(char nomEntite[], char codeEntite[], char type[], char val[], int y
                 strcpy(t->info.codeEntite, codeEntite);
                 strcpy(t->info.type, type);
                 strcpy(t->info.val, val);
+                strcpy(t->info.Constant, Constant);
                 t->suiv = NULL;
                 q = t;
             }
@@ -204,9 +206,9 @@ void inserer(char nomEntite[], char codeEntite[], char type[], char val[], int y
 void affiche()
 {
     printf("\n\n/***************Table des symboles IDF*************/\n");
-    printf("____________________________________________________________________\n");
-    printf("\t| Nom_Entite |  Code_Entite | Type_Entite | Val_Entite\n");
-    printf("____________________________________________________________________\n");
+    printf("_________________________________________________________________________________\n");
+    printf("\t| Nom_Entite |  Code_Entite | Type_Entite | Val_Entite | Const \n");
+    printf("__________________________________________________________________________________\n");
     if (t == NULL)
     {
         printf("liste est vide");
@@ -216,7 +218,7 @@ void affiche()
         listTs p = t;
         while (p != NULL)
         {
-            printf("\t|%11s |%12s | %12s | %12s\n", p->info.nomEntite, p->info.codeEntite, p->info.type, p->info.val);
+            printf("\t|%11s |%12s | %12s | %12s| %12s \n", p->info.nomEntite, p->info.codeEntite, p->info.type, p->info.val,p->info.Constant);
             p = p->suiv;
         }
     }
@@ -264,4 +266,25 @@ void affiche()
         }
     }
     printf("____________________________________\n");
+}
+void updateType(char nomEntite[], char newType[]) {
+   
+    listTs current = t;
+    while (current != NULL) {
+        if (strcmp(current->info.nomEntite, nomEntite) == 0) {
+            strcpy(current->info.type, newType);
+        }
+        current = current->suiv;
+    }
+}
+
+void updateConst(char nomEntite[], char cst[]) {
+   
+    listTs current = t;
+    while (current != NULL) {
+        if (strcmp(current->info.nomEntite, nomEntite) == 0) {
+            strcpy(current->info.Constant, cst);
+        }
+        current = current->suiv;
+    }
 }
