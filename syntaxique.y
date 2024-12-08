@@ -1,16 +1,23 @@
-%start S
+%{
+    int nb_ligne=1; 
+    int col=1;
+%}
+
 %union{
     int entier;
     char* str;
     float numvrg;
 }
 
+
 %token  mc_import mc_Math  mc_io mc_lang pvg mc_prog mc_dec mc_integer mc_float mc_const  mc_debut mc_fin mc_input mc_write  string mc_for mc_endfor mc_do inc  affectation mc_if mc_endif mc_else  sup_ou_egal inf_ou_egal egal diff mc_ou mc_et dec
+
 %token <str>idf <entier>cst <numvrg>reel
 
 %right '='
 %left '+''-'
 %left '*''/'
+%start S
 %%
 S: List_import Programme {printf("syntaxe correcte");
                 YYACCEPT;};
@@ -20,7 +27,8 @@ Lib: mc_Math | mc_lang |mc_io;
 Programme: mc_prog idf Dec Corps;
 Dec: mc_dec List_dec;
 List_dec:  Type_dec List_dec |;
-Type_dec: Type List_idf |mc_const Type idf '=' Constant pvg;
+
+Type_dec: Type List_idf |mc_const Type idf '=' Constant pvg|mc_const Type idf pvg;
 List_idf: Var '|' List_idf |Var pvg;
 Var :idf | idf '[' cst ']' 
 Type: mc_integer | mc_float;
@@ -64,3 +72,7 @@ main(){
     affiche();
 }
 yywrap(){}
+int yyerror ( char*  msg )  
+{
+    printf ("Erreur Syntaxique : a ligne %d a colonne %d \n", nb_ligne, col);
+}
