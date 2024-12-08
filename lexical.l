@@ -19,96 +19,106 @@ CommentMultiLine (\/\*)([^*]|\*+[^\/])*(\*+\/)
 %%
 import  {
     col= col + strlen(yytext);
-    inserer(yytext,"mot cle","","",2);
+    inserer(yytext,"mot cle","","","",2);
     return mc_import;
 }
 ISIL.math {
      col= col + strlen(yytext);
-     inserer(yytext,"mot cle","","",2);
+     inserer(yytext,"mot cle","","","",2);
      return mc_Math;
 }
 ISIL.lang {
-     inserer(yytext,"mot cle","","",2);
+     inserer(yytext,"mot cle","","","",2);
      col= col + strlen(yytext);
      return mc_lang;
 }
 ISIL.io {
-    inserer(yytext,"mot cle","","",2); 
+    inserer(yytext,"mot cle","","","",2);
+
     col= col + strlen(yytext);    
     return mc_io;
 }
 Programme {
-     inserer(yytext,"mot cle","","",2);
+     inserer(yytext,"mot cle","","","",2);
+
      col= col + strlen(yytext); 
      return mc_prog;
 }
 PDec {
-     inserer(yytext,"mot cle","","",2);
+     inserer(yytext,"mot cle","","","",2);
+
      col= col + strlen(yytext);
      return mc_dec;
 }
 Integer {
-     inserer(yytext,"mot cle","","",2);
+    yylval.str=strdup(yytext);
+     inserer(yytext,"mot cle","","","",2);
+
      col= col + strlen(yytext);
      return mc_integer;
 }
 Float {
-    inserer(yytext,"mot cle","","",2);
+    yylval.str=strdup(yytext);
+    inserer(yytext,"mot cle","","","",2);
     col= col + strlen(yytext);
     return mc_float;
 }
 InDebut {
-    inserer(yytext,"mot cle","","",2);
+    inserer(yytext,"mot cle","","","",2);
+
     col= col + strlen(yytext);
     return mc_debut;
 }
 InFin {
-    inserer(yytext,"mot cle","","",2);
+    inserer(yytext,"mot cle","","","",2);
     col= col + strlen(yytext);
     return mc_fin;
 }
 final {
-    inserer(yytext,"mot cle","","",2);
+    inserer(yytext,"mot cle","","","",2);
     col= col + strlen(yytext);
     return mc_const;
 }
 Input {
-    inserer(yytext,"mot cle","","",2);
+    inserer(yytext,"mot cle","","","",2);
+
     col= col + strlen(yytext);
     return mc_input;
 }
 Write {
-     inserer(yytext,"mot cle","","",2);
+     inserer(yytext,"mot cle","","","",2);
+
      col= col + strlen(yytext);
      return mc_write;
 }
 for {
-    inserer(yytext,"mot cle","","",2);
+    inserer(yytext,"mot cle","","","",2);
     col= col + strlen(yytext);
     return mc_for;
 }
 endfor {
-     inserer(yytext,"mot cle","","",2);
+    inserer(yytext,"mot cle","","","",2);
+
      col= col + strlen(yytext);
      return mc_endfor;
 }
 do {
-   inserer(yytext,"mot cle","","",2);
+   inserer(yytext,"mot cle","","","",2);
    col= col + strlen(yytext);
    return mc_do;
 }
 if {
-   inserer(yytext,"mot cle","","",2);
+   inserer(yytext,"mot cle","","","",2);
    col= col + strlen(yytext);
    return mc_if;
 }
 else {
-    inserer(yytext,"mot cle","","",2);
+    inserer(yytext,"mot cle","","","",2);
     col= col + strlen(yytext);
     return mc_else;
 }
 endif {
-    inserer(yytext,"mot cle","","",2);
+    inserer(yytext,"mot cle","","","",2);
     col= col + strlen(yytext);
     return mc_endif;
 }
@@ -123,23 +133,23 @@ endif {
 \&\& {col= col + strlen(yytext); return mc_et;}
 "||" {col= col + strlen(yytext); return mc_ou;}
 [\[\]\,\|\+\-\*\/\(\)\<\>\=\!] {
-          inserer(yytext,"Separateur","","",3);
+          inserer(yytext,"Separateur","","","",3);
           col= col+1;
           return yytext[0];
 }
 {cst} {
-    int number = atoi(yytext);
+    yylval.entier = atoi(yytext);
     col= col + strlen(yytext);
-        if(!(atoi(yytext) >= -32768 && atoi(yytext) <= 32767)){
-            printf("Erreur: '%d' doit etre entre -32768 et 32767\n",number);
+        if(!(yylval.entier >= -32768 && yylval.entier <= 32767)){
+            printf("Erreur: '%d' doit etre entre -32768 et 32767\n",yylval.entier);
         }else{
-            yylval.entier=atoi(yytext);
+            
             return cst;
         }
 }
 {reel} {
          col= col + strlen(yytext);
-          yylval.numvrg=atoi(yytext);
+          yylval.numvrg=atof(yytext);
           return reel;
 }
 {string} {col= col + strlen(yytext); return string;}
@@ -149,7 +159,7 @@ if (yyleng > 18) {
 printf("Erreur:'%s' depasser 18 caracteres a la ligne %d\n", yytext, nb_ligne);
 } else {
     yylval.str = strdup(yytext);
-    inserer(yytext,"idf","","",1);
+    inserer(yytext,"idf","","","",1);
 return idf;
 }
 }
