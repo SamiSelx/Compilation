@@ -22,6 +22,7 @@
 %right '='
 %left '+''-'
 %left '*''/'
+
 %start S
 %%
 S: List_import Programme {printf("syntaxe correcte");
@@ -33,29 +34,57 @@ Programme: mc_prog idf Dec Corps;
 Dec: mc_dec List_dec;
 List_dec:  Type_dec List_dec |;
 
-Type_dec:Type List_idf|mc_const Type idf '=' Constant pvg {updateType($3,sauvType); updateConst($3,"oui");} |mc_const Type idf pvg {updateType($3,sauvType);updateConst($3,"oui");};
+// remove | Comment 
+Type_dec:Type List_idf
+|mc_const Type idf '=' Constant pvg 
+{ updateConst($3,"oui");
+if (doubleDeclaration($3)==0){ 
+    updateType($3,sauvType);
+}else{
+    printf("Erreur Semantique: double declation de %s, a la ligne %d , colonne %d\n", $3, nb_ligne,col);
+}
+} 
+|mc_const Type idf pvg 
+{updateConst($3,"oui");
+if (doubleDeclaration($3)==0){ 
+    updateType($3,sauvType);
+}else{
+    printf("Erreur Semantique: double declation de %s, a la ligne %d , colonne %d\n", $3, nb_ligne,col);
+}
+};
+
 List_idf: Var   '|' List_idf |Var pvg;
 Var :
 idf 
-{updateType($1,sauvType);
- updateConst($1,"non");}
+{
+updateConst($1,"non"); 
+if (doubleDeclaration($1)==0){ 
+    updateType($1,sauvType); 
+}else{
+    printf("Erreur Semantique: double declation de %s, a la ligne %d , colonne %d\n", $1, nb_ligne,col);
+}
+ }
 | idf '[' cst ']'
- {updateType($1,sauvType); 
- updateConst($1,"non");}; 
+ {
+ updateConst($1,"non");
+if (doubleDeclaration($1)==0) {updateType($1,sauvType); }
+else 
+{    printf("Erreur Semantique: double declation de %s, a la ligne %d , colonne %d\n", $1, nb_ligne,col);
+}
+ }; 
 
 Type:mc_integer {strcpy(sauvType,$1)}|mc_float {strcpy(sauvType,$1)};
 
 
-
 Corps: mc_debut List_inst mc_fin;
+// remove  Comment List_inst 
 List_inst: Inst_aff List_inst | Inst_lecture List_inst| Inst_write List_inst | Inst_for List_inst |Inst_if List_inst | ;
 Inst_lecture: mc_input '(' string ')' pvg | mc_input '(' string ',' List_idf_io')' pvg;
 Inst_write: mc_write '(' string ')' pvg | mc_write '(' string ',' List_idf_io ')' pvg;
 List_idf_io: idf ',' List_idf_io | idf;
-Inst_aff: Var affectation Operation pvg;
+Inst_aff: idf affectation Operation pvg| idf '[' cst ']' affectation Operation pvg;
 Operation: Value Op_arithmetiques Operation | Value ;
-Value: Var | Constant | '(' Operation ')' ;
-Constant : cst  | reel ;
+Value: idf | Constant | '(' Operation ')' ;
 
 // Second Method:
 /* Operation: Operation '+' Exp | Operation '-' Exp | Exp;
@@ -64,6 +93,7 @@ Value: idf | Constant | '(' Operation ')' ; */
 
 /* Comment: Comment_one_line | mc_cmnt_multi;
 Comment_one_line: mc_cmnt_one_line | mc_cmnt_one_line2; */
+Constant : cst  | reel ;
 
 
 Inst_for: mc_for '(' Declaration pvg List_Condition pvg Compteur ')' mc_do List_inst mc_endfor ;
@@ -76,8 +106,8 @@ List_Condition: Condition| Condition Op_logiques List_Condition ;
 Condition:Value Op_comparaison Value;
 
 
-Op_comparaison: '>' | '<' | sup_ou_egal | inf_ou_egal | egal | diff;
-Op_logiques:mc_ou | mc_et |'!'  ;
+Op_comparaison:'>' |'<' |sup_ou_egal |inf_ou_egal |egal |diff;
+Op_logiques:mc_ou |mc_et |'!'  ;
 Op_arithmetiques: '-' | '+' | '*' | '/';
 %%
 main(){

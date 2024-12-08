@@ -269,12 +269,13 @@ void affiche()
 }
 
 void updateType(char nomEntite[], char newType[]) {
-   //adding search if the type is empty 
+
     listTs current = t;
     while (current != NULL) {
-        if (strcmp(current->info.nomEntite, nomEntite) == 0) {
+        if (strcmp(current->info.nomEntite, nomEntite) == 0 )  {
             strcpy(current->info.type, newType);
         }
+        
         current = current->suiv;
     }
 }
@@ -289,3 +290,26 @@ void updateConst(char nomEntite[], char cst[]) {
         current = current->suiv;
     }
 }
+
+int  doubleDeclaration(char nomEntite[]){
+  
+listTs current = t;
+while (current != NULL) {
+    if (strcmp(current->info.nomEntite, nomEntite) == 0 && strcmp(current->info.type, "") != 0) {
+        return -1; // Double déclaration 
+    }
+    current = current->suiv;
+}
+return 0; // Pas de double déclaration
+}
+
+
+// void insererType(char nomEntite[], char type[]){
+//      listTs current = t;
+//       while (current != NULL) {
+//         if (strcmp(current->info.nomEntite, nomEntite) == 0) {
+//            strcpy(t->info.type, type);
+//         }
+//         current = current->suiv;
+//     }
+// }
