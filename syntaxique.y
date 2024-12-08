@@ -12,7 +12,6 @@
 }
 
 
-
 %token  mc_import mc_Math  mc_io mc_lang pvg mc_prog mc_dec  mc_const  mc_debut mc_fin mc_input mc_write  string mc_for mc_endfor mc_do inc  affectation mc_if mc_endif mc_else  sup_ou_egal inf_ou_egal egal diff mc_ou mc_et dec
 %token <str>idf <entier>cst <numvrg>reel <str> mc_integer <str>mc_float
 
@@ -23,7 +22,6 @@
 %right '='
 %left '+''-'
 %left '*''/'
-
 %start S
 %%
 S: List_import Programme {printf("syntaxe correcte");

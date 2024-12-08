@@ -3,7 +3,6 @@ extern int nb_ligne;
 extern int col;
 #include "syntaxique.tab.h"   
 #include "TS.h"
-
 // int nb_ligne = 1;
 extern YYSTYPE yylval;
 %}
@@ -35,22 +34,26 @@ ISIL.lang {
 }
 ISIL.io {
     inserer(yytext,"mot cle","","","",2);
+
     col= col + strlen(yytext);    
     return mc_io;
 }
 Programme {
      inserer(yytext,"mot cle","","","",2);
+
      col= col + strlen(yytext); 
      return mc_prog;
 }
 PDec {
      inserer(yytext,"mot cle","","","",2);
+
      col= col + strlen(yytext);
      return mc_dec;
 }
 Integer {
     yylval.str=strdup(yytext);
      inserer(yytext,"mot cle","","","",2);
+
      col= col + strlen(yytext);
      return mc_integer;
 }
@@ -62,6 +65,7 @@ Float {
 }
 InDebut {
     inserer(yytext,"mot cle","","","",2);
+
     col= col + strlen(yytext);
     return mc_debut;
 }
@@ -77,11 +81,13 @@ final {
 }
 Input {
     inserer(yytext,"mot cle","","","",2);
+
     col= col + strlen(yytext);
     return mc_input;
 }
 Write {
      inserer(yytext,"mot cle","","","",2);
+
      col= col + strlen(yytext);
      return mc_write;
 }
@@ -92,6 +98,7 @@ for {
 }
 endfor {
     inserer(yytext,"mot cle","","","",2);
+
      col= col + strlen(yytext);
      return mc_endfor;
 }
