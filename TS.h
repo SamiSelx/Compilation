@@ -292,24 +292,72 @@ void updateConst(char nomEntite[], char cst[]) {
 }
 
 int  doubleDeclaration(char nomEntite[]){
-  
+  //doubleDeclaration--> 0: ok (pas de double dec) c'est une dec pour la premiere fois
+  //                  -->-1 : c'est une double dec
 listTs current = t;
 while (current != NULL) {
-    if (strcmp(current->info.nomEntite, nomEntite) == 0 && strcmp(current->info.type, "") != 0) {
-        return -1; // Double déclaration 
+    if (strcmp(current->info.nomEntite, nomEntite) == 0 && strcmp(current->info.type, "") == 0) {
+        return 0; 
     }
     current = current->suiv;
 }
-return 0; // Pas de double déclaration
+return -1; 
+}
+
+int  NonDeclaration(char nomEntite[]){
+        //si les deux champ sont remplie nomEntite Type   
+listTs current = t;
+while (current != NULL) {
+    if (strcmp(current->info.nomEntite, nomEntite) == 0) {
+        if(strcmp(current->info.type, "") != 0) return 0; //declarer
+        return -1;
+    }
+    current = current->suiv;
+}
+return -1; //non dec
 }
 
 
-// void insererType(char nomEntite[], char type[]){
-//      listTs current = t;
-//       while (current != NULL) {
-//         if (strcmp(current->info.nomEntite, nomEntite) == 0) {
-//            strcpy(t->info.type, type);
-//         }
-//         current = current->suiv;
-//     }
-// }
+void verifierAffectation(char entite1[], char entite2[]){
+    char type1[20];
+    char type2[20];
+       
+        listTs current = t; 
+        while (current != NULL) {
+            if (strcmp(current->info.nomEntite, entite1) == 0) {
+                strcpy(type1, current->info.type); 
+                break; 
+            }
+            current = current->suiv; 
+        }
+
+        
+        current = t; 
+        while (current != NULL) {
+            if (strcmp(current->info.nomEntite, entite2) == 0) {
+                strcpy(type2, current->info.type); 
+                break; 
+            }
+            current = current->suiv; 
+        }
+        
+         if (isCompatible(type1, type2) == -1) {
+           printf("Erreur : Incompatibilite de types entre %s :%s et %s: %s.\n",entite1, type1, entite2, type2);
+         }
+
+
+}
+
+int isCompatible(char type1[], char type2[]) {
+    //isCompatible -->0 ok
+    //             -->-1 non compatible
+
+    if (strcmp(type1, type2) == 0) {
+        return 0; 
+    }    
+    if (strcmp(type1, "Float") == 0 && strcmp(type2, "Integer") == 0) {
+        return 0; //float f=2.4            int x=6
+                  // int x=f; non    But   float f=x  ok
+    }
+    return -1; 
+}
