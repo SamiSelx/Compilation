@@ -2,7 +2,6 @@
     int nb_ligne=1; 
     int col=1;
     char sauvType[20];
-    char sauvIdf1[20];
     char sauvIdf2[20];
 %}
 
@@ -119,7 +118,7 @@ Constant : cst | reel ;
 
 
 Inst_for: mc_for '(' Declaration pvg List_Condition pvg Compteur ')' mc_do List_inst mc_endfor ;
-Declaration:idf affectation Value {if(NonDeclaration($1)== -1)printf("Entite %s non declarer la ligne :%d  colonne:%d\n",sauvIdf1,nb_ligne,col);else  verifierAffectation(sauvIdf1,sauvIdf2);};
+Declaration:idf affectation Value {if(NonDeclaration($1)== -1)printf("Entite %s non declarer la ligne :%d  colonne:%d\n",$1,nb_ligne,col);else  verifierAffectation($1,sauvIdf2);};
 Compteur:idf inc| idf dec;
 
 Inst_if: mc_if '(' List_Condition ')' mc_do List_inst mc_endif|Inst_if_else;
