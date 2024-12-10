@@ -1,7 +1,23 @@
 %{
+    typedef struct
+    {
+        int i_val;
+        float f_val;
+        int is_i_val;
+    } ValueType;
     int nb_ligne=1; 
     int col=1;
     char sauvType[20];
+    // int sauvValueInt;
+    // float sauvValueFloat;
+    // int isInt;
+    ValueType val;
+    int io_lib = 0;
+    int lang_lib = 0;
+    int indexIdf = 0;
+    char formatTable[50];
+    char idfTable[50][50];
+
 %}
 
 %union{
@@ -12,9 +28,9 @@
 }
 
 
-%token  mc_import mc_Math  mc_io mc_lang pvg mc_prog mc_dec  mc_const  mc_debut mc_fin mc_input mc_write  string mc_for mc_endfor mc_do inc  affectation mc_if mc_endif mc_else  sup_ou_egal inf_ou_egal egal diff mc_ou mc_et dec
-%token <str>idf <entier>cst <numvrg>reel <str> mc_integer <str>mc_float
-
+%token  mc_import  mc_io mc_lang pvg mc_prog mc_dec  mc_const  mc_debut mc_fin mc_input mc_write  mc_for mc_endfor mc_do inc  affectation mc_if mc_endif mc_else  sup_ou_egal inf_ou_egal egal diff mc_ou mc_et dec
+%token <str>idf string <entier>cst <numvrg>reel <str> mc_integer <str>mc_float
+%type <str>List_idf_io
 %left mc_ou
 %left mc_et
 %left '!'
@@ -27,35 +43,112 @@
 S: List_import Programme {printf("syntaxe correcte");
                 YYACCEPT;};
 List_import: mc_import Lib pvg List_import | ;              
-Lib: mc_Math | mc_lang |mc_io;
+Lib:  mc_lang {lang_lib = 1;} |mc_io {io_lib = 1};
 
 Programme: mc_prog idf Dec Corps;
 Dec: mc_dec List_dec;
 List_dec:  Type_dec List_dec |;
 
-Type_dec:Type List_idf|mc_const Type idf '=' Constant pvg {updateType($3,sauvType); updateConst($3,"oui");} |mc_const Type idf pvg {updateType($3,sauvType);updateConst($3,"oui");};
-List_idf: Var   '|' List_idf |Var pvg;
+Type_dec:
+    Type List_idf 
+    |mc_const Type idf '=' Constant pvg {updateType($3,sauvType); updateConst($3,"oui"); updateValue($3,val)} 
+    |mc_const Type idf pvg {updateType($3,sauvType);updateConst($3,"oui");};
+    |mc_const Type idf '[' cst ']' '=' Constant pvg 
+    {
+        // updateType($3,sauvType);  updateValue($3,val);sauvegarderTailleTable($3,$5);
+        updateConst($3,"oui");
+        if($5 <= 0){
+            printf("Erreur semantique: la taille de tableau %s doit etre superieure a 0, a la ligne %d a la colonne %d\n",$3,nb_ligne,col);
+        }else {
+            updateType($3,sauvType); 
+            updateValue($3,val);
+            sauvegarderTailleTable($3,$5);
+        }
+    } 
+    |mc_const Type idf '[' cst ']' pvg {
+        updateConst($3,"oui");
+    if($5 <= 0){
+        printf("Erreur semantique: la taille de tableau %s doit etre strictement superieure a 0, a la ligne %d a la colonne %d\n",$3,nb_ligne,col);
+    }else {
+        updateType($3,sauvType); 
+        sauvegarderTailleTable($3,$5);
+    }
+    };
+List_idf: Var '|' List_idf |Var pvg;
 Var :
 idf 
 {updateType($1,sauvType);
  updateConst($1,"non");}
 | idf '[' cst ']'
- {updateType($1,sauvType); 
- updateConst($1,"non");}; 
+ {
+    updateConst($1,"non");
+    if($3 <= 0){
+        printf("Erreur semantique: la taille de tableau %s doit etre superieure a 0, a la ligne %d a la colonne %d\n",$1,nb_ligne,col);
+    }else {
+        updateType($1,sauvType); 
+        sauvegarderTailleTable($1,$3);
+    }
+ }; 
 
 Type:mc_integer {strcpy(sauvType,$1)}|mc_float {strcpy(sauvType,$1)};
 
 
 
 Corps: mc_debut List_inst mc_fin;
-List_inst: Inst_aff List_inst | Inst_lecture List_inst| Inst_write List_inst | Inst_for List_inst |Inst_if List_inst | ;
-Inst_lecture: mc_input '(' string ')' pvg | mc_input '(' string ',' List_idf_io')' pvg;
-Inst_write: mc_write '(' string ')' pvg | mc_write '(' string ',' List_idf_io ')' pvg;
-List_idf_io: idf ',' List_idf_io | idf;
-Inst_aff: Var affectation Operation pvg;
+List_inst: Inst_aff {if(lang_lib == 0) printf("Erreur semantique: bibliotheque ISIL.lang n'est pas declarer, a la ligne %d a la colonne %d\n",nb_ligne,col)}  List_inst 
+        | Inst_lecture {if(io_lib == 0) printf("Erreur semantique: bibliotheque ISIL.io n'est pas declarer, a la ligne %d a la colonne %d\n",nb_ligne,col)} List_inst
+        | Inst_write {if(io_lib == 0) printf("Erreur semantique: bibliotheque ISIL.io n'est pas declarer, a la ligne %d a la colonne %d\n",nb_ligne,col)}  List_inst 
+        | Inst_for List_inst 
+        |Inst_if List_inst | ;
+Inst_lecture: mc_input '(' string ')' pvg 
+            | mc_input '(' string ',' {indexIdf = 0;} List_idf_io')' pvg
+            {   
+                if(checkNumberVariable($3,indexIdf,formatTable) == -1){
+                    printf("Erreur semantique: incompatible nombre variable declare, a la ligne %d a la colonne %d\n",nb_ligne,col);
+                }else{
+                    if(checkTypeFormat(formatTable,idfTable,indexIdf) == -1){
+                        printf("Erreur semantique: incompatible de type des variables declare, a la ligne %d a la colonne %d\n",nb_ligne,col);
+                    }
+                }
+            }; 
+Inst_write: mc_write '(' string ')' pvg 
+    | mc_write '(' string ',' {indexIdf = 0;} List_idf_io ')' pvg 
+    {if(checkNumberVariable($3,indexIdf,formatTable) == -1){
+        printf("Erreur semantique: incompatible nombre variable declare, a la ligne %d a la colonne %d\n",nb_ligne,col);
+    }else{
+        if(checkTypeFormat(formatTable,idfTable,indexIdf) == -1){
+            printf("Erreur semantique: incompatible de type des variables declare, a la ligne %d a la colonne %d\n",nb_ligne,col);
+        }
+    }
+    }; 
+List_idf_io: idf ',' List_idf_io 
+        {   
+            // printf("after idf %s %c",$1,formatTabel[0]);
+            strcpy(idfTable[indexIdf],$1);
+            indexIdf++;
+        }
+        | idf {
+            strcpy(idfTable[indexIdf],$1);
+            indexIdf++
+            };
+Inst_aff: idf affectation Operation pvg 
+{if(checkConstValue($1) == 0) 
+    {printf("Erreur semantique: modification de la valeur d'une constante a la ligne %d a la colonne %d \n",nb_ligne,col);}
+    else {
+        updateValue($1,val);
+    }
+    }
+    | idf '[' cst ']' affectation Operation pvg
+    {if(checkConstValue($1) == 0) 
+    {printf("Erreur semantique: modification de la valeur d'une constante a la ligne %d a la colonne %d \n",nb_ligne,col);}
+    else {
+        updateValue($1,val);
+    }
+    }
+    ;
 Operation: Value Op_arithmetiques Operation | Value ;
 Value: Var | Constant | '(' Operation ')' ;
-Constant : cst  | reel ;
+Constant : cst { val.i_val = $1; val.is_i_val = 1;}| reel { val.f_val = $1; val.is_i_val = 0;};
 
 // Second Method:
 /* Operation: Operation '+' Exp | Operation '-' Exp | Exp;
