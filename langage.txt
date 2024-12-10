@@ -1,53 +1,18 @@
-import ISIL.math;
+//import ISIL.math;
 import ISIL.io;
-import ISIL.lang;
+//import ISIL.lang;
 
 Programme L3_ISIL_A
 PDec
 // Declaration des variables
-Integer X|Y|Z;
-Float A;
-Integer Tab[10];
-final Integer U=10.54;
-final Float U=10;
-Integer T[10]|A[10];
-
+Float X;
+final Integer S = 4;
+final Integer T[10];
+Integer G[4];
 InDebut
-# Partie Instruction
-Y<-- 6 + X - 1 + 4 - 7 * (4 +X + +1.5) + 4; 
-//Input("hey there");
-//Input("hey there d",X);
-//Write ("hey sam");
-//Write ("hey sam",X);
-X<-- 3276;
-/*
-fdfd
-fdfd
-*/
-#fdsfs
-if(X>7 || Y!=6 && Z>=8)do
-X<-- 6*7*5/9;
-Y<-- 6 + X - 1 + 4 - 7 * 4 + X; 
-Y<-- 6 + X - 1; 
-X<-- 6*7*5/9;
-Y<-- 6*X;
-T[10]<-- 6*7*5/9;
-Write ("hey sam");
-Input("hey there");
-else 
-Y<-- 8;
-endif
-
-
-for(X<-- 7;X<7;X--)
-do 
-X<-- -5;
-Y<-- +2;
-Z <-- 54 + 4 - 5;
-endfor
-
-// one line comment
-/* ceci est 
-un commentaire
-isil A */
+X <-- 5.55;
+// S: Integer
+Write("hey %d %f %d %d %d ",S,X,S,T,G);
+// nombre variable:
+Input("gg %f %d",X,S);
 InFin
