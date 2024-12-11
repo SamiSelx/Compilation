@@ -4,6 +4,7 @@
     char sauvType[20];
     char sauvIdf2[20];
     int sauvconst;
+    float sauvfloat;
     char sauvOp[1];
 %}
 
@@ -103,15 +104,19 @@ else if(verifierAffectation($1,sauvIdf2) == -1){
 
 Operation: Value Op_arithmetiques Operation 
 {    
-    if(strcmp(sauvOp,"/")==0 && sauvconst==0){printf("Erreur Semantique : division pas zero ligne %d colonne %d\n",nb_ligne,col); sauvconst = -1;}  
+    if(strcmp(sauvOp,"/")==0 && (sauvconst==0 || sauvfloat==0)){printf("Erreur Semantique : division pas zero ligne %d colonne %d\n",nb_ligne,col); sauvconst = -1; sauvfloat=-1;}  
     
 }
-| Value {if(strcmp(sauvOp,"/")==0 && sauvconst==0){printf("Erreur Semantique : division pas zero ligne %d colonne %d\n",nb_ligne,col); sauvconst = -1;}  
+| Value {if(strcmp(sauvOp,"/")==0 && sauvconst==0){printf("Erreur Semantique : division pas zero ligne %d colonne %d\n",nb_ligne,col); sauvconst = -1; sauvfloat=-1;}  
 };
 
+
+
 Value: idf 
-{strcpy(sauvIdf2,$1);
+{
+strcpy(sauvIdf2,$1);
 if(NonDeclaration($1) == -1) {updateConst($1,""); printf("Entite %s non declarer ligne:%d colonne:%d \n",$1,nb_ligne,col);  }
+
 } 
 | idf'[' cst ']'
 {strcpy(sauvIdf2,$1);
@@ -127,7 +132,7 @@ Value: idf | Constant | '(' Operation ')' ; */
 
 /* Comment: Comment_one_line | mc_cmnt_multi;
 Comment_one_line: mc_cmnt_one_line | mc_cmnt_one_line2; */
-Constant : cst {sauvconst=$1;}| reel ;
+Constant : cst {sauvconst=$1;}| reel {sauvfloat=$1;};
 
 
 Inst_for: mc_for '(' Declaration pvg List_Condition pvg Compteur ')' mc_do List_inst mc_endfor ;

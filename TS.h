@@ -358,3 +358,43 @@ int isCompatible(char type1[], char type2[]) {
     return -1; 
 }
 
+int getType(char nomEntite[]){
+listTs current = t;
+while (current != NULL) {
+    if (strcmp(current->info.nomEntite, nomEntite) == 0) {
+       if(strcmp(current->info.type,"Integer")==0) return 0;
+       if(strcmp(current->info.type,"Float")==0) return 1;
+    }
+    current = current->suiv;
+}
+return -1; //non entite found
+}
+
+// int getvalueInt(char nomEntite[]){
+// listTs current = t;
+// while (current != NULL) {
+//     if (strcmp(current->info.nomEntite, nomEntite) == 0) {
+//        return current->info.val;
+       
+//     }
+//     current = current->suiv;
+// }
+// return -1; //non entite found
+
+// }
+
+// float getvalueFloat(char nomEntite[]){
+// listTs current = t;
+// while (current != NULL) {
+//     if (strcmp(current->info.nomEntite, nomEntite) == 0) {
+//        return current->info.val;
+       
+//     }
+//     current = current->suiv;
+// }
+// return -1; //non entite found
+
+// }
+
+
+
