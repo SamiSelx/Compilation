@@ -1,10 +1,20 @@
-import ISIL.math;
+//import ISIL.math;
 import ISIL.io;
-import ISIL.lang;
+//import ISIL.lang;
 
 Programme L3_ISIL_A
 PDec
 // Declaration des variables
+Float X;
+final Integer S = 4;
+final Integer T[10];
+Integer G[4];
+InDebut
+X <-- 5.55;
+// S: Integer
+Write("hey %d %f %d %d %d ",S,X,S,T,G);
+// nombre variable:
+Input("gg %f %d",X,S);
 
 final Integer U=10.54;
 final Float U=10;
