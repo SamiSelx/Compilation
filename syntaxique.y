@@ -3,6 +3,8 @@
     int col=1;
     char sauvType[20];
     char sauvIdf2[20];
+    int sauvconst;
+    char sauvOp[1];
 %}
 
 %union{
@@ -14,8 +16,7 @@
 
 
 %token  mc_import mc_Math  mc_io mc_lang pvg mc_prog mc_dec  mc_const  mc_debut mc_fin mc_input mc_write  string mc_for mc_endfor mc_do inc  affectation mc_if mc_endif mc_else  sup_ou_egal inf_ou_egal egal diff mc_ou mc_et dec
-%token <str>idf <entier>cst <numvrg>reel <str> mc_integer <str>mc_float 
-
+%token <str>idf <entier>cst <numvrg>reel <str> mc_integer <str>mc_float  <str> '/'
 %left mc_ou
 %left mc_et
 %left '!'
@@ -98,14 +99,21 @@ else verifierAffectation($1,sauvIdf2);
 
 
 
-Operation: Value Op_arithmetiques Operation | Value ;
+Operation: Value Op_arithmetiques Operation 
+{    
+    if(strcmp(sauvOp,"/")==0 && sauvconst==0){printf("Erreur Semantique : division pas zero ligne %d colonne %d\n",nb_ligne,col); sauvconst = -1;}  
+    
+}
+| Value {if(strcmp(sauvOp,"/")==0 && sauvconst==0){printf("Erreur Semantique : division pas zero ligne %d colonne %d\n",nb_ligne,col); sauvconst = -1;}  
+};
+
 Value: idf 
 {strcpy(sauvIdf2,$1);
 } 
 | idf'[' cst ']'
 {strcpy(sauvIdf2,$1);
 }
-|Constant | '(' Operation ')' ;
+|Constant| '(' Operation ')' ;
 
 // Second Method:
 /* Operation: Operation '+' Exp | Operation '-' Exp | Exp;
@@ -114,11 +122,15 @@ Value: idf | Constant | '(' Operation ')' ; */
 
 /* Comment: Comment_one_line | mc_cmnt_multi;
 Comment_one_line: mc_cmnt_one_line | mc_cmnt_one_line2; */
-Constant : cst | reel ;
+Constant : cst {sauvconst=$1;}| reel ;
 
 
 Inst_for: mc_for '(' Declaration pvg List_Condition pvg Compteur ')' mc_do List_inst mc_endfor ;
-Declaration:idf affectation Value {if(NonDeclaration($1)== -1)printf("Entite %s non declarer la ligne :%d  colonne:%d\n",$1,nb_ligne,col);else  verifierAffectation($1,sauvIdf2);};
+Declaration:idf affectation Value
+{if(NonDeclaration($1)== -1)printf("Entite %s non declarer ligne:%d colonne:%d \n",$1,nb_ligne,col);  
+else if(NonDeclaration(sauvIdf2)== -1)printf("Entite  %s non declarer ligne:%d colonne:%d \n",sauvIdf2,nb_ligne,col);
+else verifierAffectation($1,sauvIdf2);
+};
 Compteur:idf inc| idf dec;
 
 Inst_if: mc_if '(' List_Condition ')' mc_do List_inst mc_endif|Inst_if_else;
@@ -129,7 +141,7 @@ Condition:Value Op_comparaison Value;
 
 Op_comparaison:'>' |'<' |sup_ou_egal |inf_ou_egal |egal |diff;
 Op_logiques:mc_ou |mc_et |'!'  ;
-Op_arithmetiques: '-' | '+' | '*' | '/';
+Op_arithmetiques: '-' | '+' | '*' | '/'{strcpy(sauvOp,$1);};
 %%
 main(){
     yyparse();

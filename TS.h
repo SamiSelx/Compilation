@@ -310,7 +310,7 @@ listTs current = t;
 while (current != NULL) {
     if (strcmp(current->info.nomEntite, nomEntite) == 0) {
         if(strcmp(current->info.type, "") != 0) return 0; //declarer
-        return -1;
+        return -1;//non dec
     }
     current = current->suiv;
 }
