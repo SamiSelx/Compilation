@@ -9,7 +9,6 @@
     int entier;
     char* str;
     float numvrg;
-   
 }
 
 
@@ -35,31 +34,32 @@ Programme: mc_prog idf Dec Corps;
 Dec: mc_dec List_dec;
 List_dec:  Type_dec List_dec |;
 
-// remove | Comment 
 Type_dec:Type List_idf
 |mc_const Type idf '=' Constant pvg 
-{ updateConst($3,"oui");
-if (doubleDeclaration($3)==0){ 
+{ 
+if (NonDeclaration($3) != 0){ 
+    updateConst($3,"oui");
     updateType($3,sauvType);
 }else{
     printf("Erreur Semantique: double declation de %s, a la ligne %d , colonne %d\n", $3, nb_ligne,col);
 }
 } 
 |mc_const Type idf pvg 
-{updateConst($3,"oui");
-if (doubleDeclaration($3)==0){ 
+{
+if (NonDeclaration($3)!=0){ 
+    updateConst($3,"oui");
     updateType($3,sauvType);
 }else{
     printf("Erreur Semantique: double declation de %s, a la ligne %d , colonne %d\n", $3, nb_ligne,col);
 }
 };
 
-List_idf: Var   '|' List_idf |Var pvg;
+List_idf: Var '|' List_idf |Var pvg;
 Var :
 idf 
 {
-updateConst($1,"non"); 
-if (doubleDeclaration($1)==0){ 
+if (NonDeclaration($1)!=0){ 
+    updateConst($1,"non"); 
     updateType($1,sauvType); 
 }else{
     printf("Erreur Semantique: double declation de %s, a la ligne %d , colonne %d\n", $1, nb_ligne,col);
@@ -67,8 +67,8 @@ if (doubleDeclaration($1)==0){
  }
 | idf '[' cst ']'
  {
- updateConst($1,"non");
-if (doubleDeclaration($1)==0) {updateType($1,sauvType); }
+
+if (NonDeclaration($1)!=0) {updateConst($1,"non"); updateType($1,sauvType); }
 else 
 {    printf("Erreur Semantique: double declation de %s, a la ligne %d , colonne %d\n", $1, nb_ligne,col);
 }
@@ -78,22 +78,24 @@ Type:mc_integer {strcpy(sauvType,$1)}|mc_float {strcpy(sauvType,$1)};
 
 
 Corps: mc_debut List_inst mc_fin;
-// remove  Comment List_inst 
+
 List_inst: Inst_aff List_inst | Inst_lecture List_inst| Inst_write List_inst | Inst_for List_inst |Inst_if List_inst | ;
 Inst_lecture: mc_input '(' string ')' pvg | mc_input '(' string ',' List_idf_io')' pvg;
 Inst_write: mc_write '(' string ')' pvg | mc_write '(' string ',' List_idf_io ')' pvg;
 List_idf_io: idf ',' List_idf_io | idf;
 Inst_aff: idf affectation Operation pvg 
 {
-if(NonDeclaration($1)== -1)printf("Entite %s non declarer ligne:%d colonne:%d \n",$1,nb_ligne,col);  
-else if(NonDeclaration(sauvIdf2)== -1)printf("Entite  %s non declarer ligne:%d colonne:%d \n",sauvIdf2,nb_ligne,col);
-else verifierAffectation($1,sauvIdf2);
+if(NonDeclaration($1)== -1){updateConst($1,""); printf("Erreur Semantique: Entite %s non declarer ligne:%d colonne:%d \n",$1,nb_ligne,col);  }
+else if(verifierAffectation($1,sauvIdf2) == -1){
+    printf("Erreur Semantique: Incompatibilite de types entre %s et %s.\n",$1, sauvIdf2);
+}
 }
 | idf '[' cst ']' affectation Operation pvg 
 {
-if(NonDeclaration($1)== -1)printf("Entite %s non declarer ligne:%d colonne:%d \n",$1,nb_ligne,col);  
-else if(NonDeclaration(sauvIdf2)== -1)printf("Entite  %s non declarer ligne:%d colonne:%d \n",sauvIdf2,nb_ligne,col);
-else verifierAffectation($1,sauvIdf2);
+if(NonDeclaration($1)== -1) {updateConst($1,""); printf("Erreur Semantique: Entite %s non declarer ligne:%d colonne:%d \n",$1,nb_ligne,col);  }
+else if(verifierAffectation($1,sauvIdf2) == -1){
+    printf("Erreur Semantique: Incompatibilite de types entre %s et %s.\n",$1, sauvIdf2);
+}
 };
 
 
@@ -101,9 +103,12 @@ else verifierAffectation($1,sauvIdf2);
 Operation: Value Op_arithmetiques Operation | Value ;
 Value: idf 
 {strcpy(sauvIdf2,$1);
+if(NonDeclaration($1) == -1) {updateConst($1,""); printf("Entite %s non declarer ligne:%d colonne:%d \n",$1,nb_ligne,col);  }
 } 
 | idf'[' cst ']'
 {strcpy(sauvIdf2,$1);
+if(NonDeclaration($1)== -1) {updateConst($1,""); printf("Entite %s non declarer ligne:%d colonne:%d \n",$1,nb_ligne,col);  }
+
 }
 |Constant | '(' Operation ')' ;
 
