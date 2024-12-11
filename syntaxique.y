@@ -173,9 +173,8 @@ else if(checkConstValue($1) == 0)
           else {updateValue($1,val);}
        } 
 
-}
 
-    }
+}
     | idf '[' cst ']' affectation Operation pvg
     {   
     if(NonDeclaration($1)== -1){updateConst($1,""); printf("Erreur Semantique: Entite %s non declarer ligne:%d colonne:%d \n",$1,nb_ligne,col);  }
@@ -208,7 +207,7 @@ if(NonDeclaration($1)== -1) {updateConst($1,""); printf("Entite %s non declarer 
 
 }
 |Constant| '(' Operation ')' ;
-Constant : cst { val.i_val = $1; val.is_i_val = 1;}| reel { val.f_val = $1; val.is_i_val = 0;};
+Constant : cst {sauvconst=$1; val.i_val = $1; val.is_i_val = 1;}| reel {sauvfloat=$1; val.f_val = $1; val.is_i_val = 0;};
 
 
 // Second Method:
@@ -218,7 +217,6 @@ Value: idf | Constant | '(' Operation ')' ; */
 
 /* Comment: Comment_one_line | mc_cmnt_multi;
 Comment_one_line: mc_cmnt_one_line | mc_cmnt_one_line2; */
-Constant : cst {sauvconst=$1;}| reel {sauvfloat=$1;};
 
 
 Inst_for: mc_for '(' Declaration pvg List_Condition pvg Compteur ')' mc_do List_inst mc_endfor ;
