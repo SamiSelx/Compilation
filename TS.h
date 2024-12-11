@@ -294,12 +294,13 @@ void affiche()
 }
 
 void updateType(char nomEntite[], char newType[]) {
-   //adding search if the type is empty 
+
     listTs current = t;
     while (current != NULL) {
-        if (strcmp(current->info.nomEntite, nomEntite) == 0) {
+        if (strcmp(current->info.nomEntite, nomEntite) == 0 )  {
             strcpy(current->info.type, newType);
         }
+        
         current = current->suiv;
     }
 }
@@ -314,6 +315,8 @@ void updateConst(char nomEntite[], char cst[]) {
         current = current->suiv;
     }
 }
+
+// check constant | updating Values PART
 
 int checkConstValue(char nomEntite[]){
     listTs p = t;
@@ -407,3 +410,113 @@ void searchTypeIdf(char nomEntite[],char typeIdf[]){
         p = p->suiv;
     }
 }
+
+// Type | Declaration PART
+
+// int  doubleDeclaration(char nomEntite[]){
+//   //doubleDeclaration--> 0: ok (pas de double dec) c'est une dec pour la premiere fois
+//   //                  -->-1 : c'est une double dec
+// listTs current = t;
+// while (current != NULL) {
+//     if (strcmp(current->info.nomEntite, nomEntite) == 0 && strcmp(current->info.type, "") == 0) {
+//         return 0; 
+//     }
+//     current = current->suiv;
+// }
+// return -1; 
+// }
+
+int  NonDeclaration(char nomEntite[]){
+        //si les deux champ sont remplie nomEntite Type   
+listTs current = t;
+while (current != NULL) {
+    if (strcmp(current->info.nomEntite, nomEntite) == 0) {
+        if(strcmp(current->info.type, "") != 0) return 0; //declarer
+        return -1;//non dec
+    }
+    current = current->suiv;
+}
+return -1; //non dec
+}
+
+
+int verifierAffectation(char entite1[], char entite2[]){
+    char type1[20];
+    char type2[20];
+       
+        listTs current = t; 
+        while (current != NULL) {
+            if (strcmp(current->info.nomEntite, entite1) == 0) {
+                strcpy(type1, current->info.type); 
+                break; 
+            }
+            current = current->suiv; 
+        }
+
+        
+        current = t; 
+        while (current != NULL) {
+            if (strcmp(current->info.nomEntite, entite2) == 0) {
+                strcpy(type2, current->info.type); 
+                break; 
+            }
+            current = current->suiv; 
+        }
+        
+        return isCompatible(type1, type2);
+}
+
+int isCompatible(char type1[], char type2[]) {
+    //isCompatible -->0 ok
+    //             -->-1 non compatible
+
+    if (strcmp(type1, type2) == 0) {
+        return 0; 
+    }    
+    if (strcmp(type1, "Float") == 0 && strcmp(type2, "Integer") == 0) {
+        return 0; //float f=2.4            int x=6
+                  // int x=f; non    But   float f=x  ok
+    }
+    return -1; 
+}
+
+int getType(char nomEntite[]){
+listTs current = t;
+while (current != NULL) {
+    if (strcmp(current->info.nomEntite, nomEntite) == 0) {
+       if(strcmp(current->info.type,"Integer")==0) return 0;
+       if(strcmp(current->info.type,"Float")==0) return 1;
+    }
+    current = current->suiv;
+}
+return -1; //non entite found
+}
+
+// int getvalueInt(char nomEntite[]){
+// listTs current = t;
+// while (current != NULL) {
+//     if (strcmp(current->info.nomEntite, nomEntite) == 0) {
+//        return current->info.val;
+       
+//     }
+//     current = current->suiv;
+// }
+// return -1; //non entite found
+
+// }
+
+// float getvalueFloat(char nomEntite[]){
+// listTs current = t;
+// while (current != NULL) {
+//     if (strcmp(current->info.nomEntite, nomEntite) == 0) {
+//        return current->info.val;
+       
+//     }
+//     current = current->suiv;
+// }
+// return -1; //non entite found
+
+// }
+
+
+

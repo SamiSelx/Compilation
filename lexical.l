@@ -129,6 +129,7 @@ endif {
 "||" {col= col + strlen(yytext); return mc_ou;}
 [\[\]\,\|\+\-\*\/\(\)\<\>\=\!] {
           inserer(yytext,"Separateur","","",3);
+          yylval.str = strdup(yytext);
           col= col+1;
           return yytext[0];
 }
