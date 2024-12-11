@@ -318,7 +318,7 @@ return -1; //non dec
 }
 
 
-void verifierAffectation(char entite1[], char entite2[]){
+int verifierAffectation(char entite1[], char entite2[]){
     char type1[20];
     char type2[20];
        
@@ -341,11 +341,7 @@ void verifierAffectation(char entite1[], char entite2[]){
             current = current->suiv; 
         }
         
-         if (isCompatible(type1, type2) == -1) {
-           printf("Erreur : Incompatibilite de types entre %s :%s et %s: %s.\n",entite1, type1, entite2, type2);
-         }
-
-
+        return isCompatible(type1, type2);
 }
 
 int isCompatible(char type1[], char type2[]) {
@@ -361,3 +357,4 @@ int isCompatible(char type1[], char type2[]) {
     }
     return -1; 
 }
+
