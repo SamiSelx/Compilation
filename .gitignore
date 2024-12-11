@@ -1,0 +1,4 @@
+rev.txt
+*.c
+syntaxique.tab.h
+*.exe

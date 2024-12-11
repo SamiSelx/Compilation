@@ -291,18 +291,18 @@ void updateConst(char nomEntite[], char cst[]) {
     }
 }
 
-int  doubleDeclaration(char nomEntite[]){
-  //doubleDeclaration--> 0: ok (pas de double dec) c'est une dec pour la premiere fois
-  //                  -->-1 : c'est une double dec
-listTs current = t;
-while (current != NULL) {
-    if (strcmp(current->info.nomEntite, nomEntite) == 0 && strcmp(current->info.type, "") == 0) {
-        return 0; 
-    }
-    current = current->suiv;
-}
-return -1; 
-}
+// int  doubleDeclaration(char nomEntite[]){
+//   //doubleDeclaration--> 0: ok (pas de double dec) c'est une dec pour la premiere fois
+//   //                  -->-1 : c'est une double dec
+// listTs current = t;
+// while (current != NULL) {
+//     if (strcmp(current->info.nomEntite, nomEntite) == 0 && strcmp(current->info.type, "") == 0) {
+//         return 0; 
+//     }
+//     current = current->suiv;
+// }
+// return -1; 
+// }
 
 int  NonDeclaration(char nomEntite[]){
         //si les deux champ sont remplie nomEntite Type   
