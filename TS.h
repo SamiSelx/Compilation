@@ -575,5 +575,35 @@ for(i=0;i<size - 1;i++){
 
 
 
+int checkListCompatible(Type_table T[],char type1[],int size){
+    int i=0;
+    char type2[20];
 
+   while(i<=size){
+
+    if(T[i].type_val==0){
+       //integer
+       strcpy(type2,"Integer");
+    }
+    if(T[i].type_val==1){
+        //float
+         strcpy(type2,"Float");
+    }
+    if(T[i].type_val==2){
+        //idf 
+        searchTypeIdf(T[i].s_val,type2);
+       
+    }
+
+        
+        if(isCompatible(type1,type2)!=0){
+            return -1; //un de T[i] n'est pas compatible avec idf1 
+            break;
+        }
+        i++;
+    }
+    if(i==size){
+        return 0; //la table des operandes est compatible avec le idf1
+    }
+}
 

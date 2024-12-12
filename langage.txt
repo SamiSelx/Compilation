@@ -5,9 +5,11 @@ Programme L3_ISIL_A
 PDec
 // Declaration des variables
 Integer X;
-Integer Z;
+Float Z;
 
 InDebut
 
-X <--  4 + 5.8  + 3 + 5 - 6 + 7/Z;
+X <-- 2.5;  //int <--float (un seule arg)
+X<-- 1 + 6 *4 - 3.7;   //int <-- liste arg 
+Z<-- 5 + 6 - 3.7;  //float <-- peut recevoir int ou float pas err
 InFin

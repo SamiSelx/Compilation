@@ -181,7 +181,7 @@ List_idf_io: idf ',' List_idf_io
             };
 Inst_aff: idf affectation {index_Op_Arith=0; index_Op=0;}Operation  pvg 
 {
-// verifierDiv(V,index_Op_Arith);
+
 if(verifierDiv(T,V,index_Op) == -1){
     printf("Erreur Semantique: Division par zero, a la ligne:%d colonne:%d \n",$1,nb_ligne,col);
 }
@@ -198,11 +198,25 @@ else if(checkConstValue($1) == 0)
            searchTypeIdf(sauvIdf2,type2);
             }
 
-    //     if(verifierAffectation($1,sauvIdf2) == -1){printf("Erreur Semantique: Incompatibilite de types entre %s et %s.\n",$1, sauvIdf2);}
-    //       else {updateValue($1,val);}
-       if(isCompatible(type1,type2) == -1){printf("Erreur Semantique: Incompatibilite de types entre %s et %s.\n",$1, sauvIdf2);}
-           else {updateValue($1,val);}
+//LE CAS: IDF<--- UN SEULE ARGUMENT 
+       if(isCompatible(type1,type2) == -1 && index_Op==1){
+        printf("Erreur Semantique (one arg passed): Incompatibilite de types  ligne %d colonne %d\n",nb_ligne,col);
+        }else {
+            updateValue($1,val);
+         }
+         
+//LE CAS : IDF <-- LIST _AFFECT
+        if(strcmp(type1,"Integer")==0 && index_Op>1){
+        // on verifie type1='integer'?  ---> le float accept tout affect (int or float ) on a pas le cas string pour le verifier
+       if (checkListCompatible(T,type1,index_Op)==-1 ){
+        printf("Erreur Semantique (list passed): Incompatibilite de types ligne: %d colonne: %d.\n",nb_ligne,col);
+       }
+       }
+
+
        } 
+
+      
 
 
 }
@@ -220,25 +234,13 @@ else if(checkConstValue($1) == 0)
         if(val.is_i_val==-1){
            searchTypeIdf(sauvIdf2,type2);
             }
-
-    //     if(verifierAffectation($1,sauvIdf2) == -1){printf("Erreur Semantique: Incompatibilite de types entre %s et %s.\n",$1, sauvIdf2);}
-    //       else {updateValue($1,val);}
        if(isCompatible(type1,type2) == -1){printf("Erreur Semantique: Incompatibilite de types entre %s et %s.\n",$1, sauvIdf2);}
            else {updateValue($1,val);}
        } 
     }
     ;
     
-Operation: Value Op_arithmetiques Operation 
-{    
-    
-    // if(strcmp(sauvOp,"/")==0 && (sauvconst==0 || sauvfloat==0)){printf("Erreur Semantique : division pas zero ligne %d colonne %d\n",nb_ligne,col); sauvconst = -1; sauvfloat=-1;}  
-    // if(verifierDiv(,)==-1){printf("Erreur Semantique : division pas zero ligne %d colonne %d\n",nb_ligne,col); sauvconst = -1; sauvfloat=-1;}
-}
-| Value {
-    // if(strcmp(sauvOp,"/")==0 && (sauvconst==0 || sauvfloat==0)){printf("Erreur Semantique : division pas zero ligne %d colonne %d\n",nb_ligne,col); sauvconst = -1; sauvfloat=-1;
-     
-};
+Operation: Value Op_arithmetiques Operation | Value ;
 
 Value: idf 
 {
