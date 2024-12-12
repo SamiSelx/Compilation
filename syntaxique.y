@@ -237,7 +237,7 @@ Operation: Value Op_arithmetiques Operation
 }
 | Value {
     // if(strcmp(sauvOp,"/")==0 && (sauvconst==0 || sauvfloat==0)){printf("Erreur Semantique : division pas zero ligne %d colonne %d\n",nb_ligne,col); sauvconst = -1; sauvfloat=-1;
-    }  
+     
 };
 
 Value: idf 
