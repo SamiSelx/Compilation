@@ -8,6 +8,15 @@ typedef struct
     float f_val;
     int is_i_val;
 } ValueType;
+typedef struct
+  {
+        int i_val;
+        float f_val;
+        char s_val[20];
+        int type_val;    //0:int  1:float  2:string
+    } Type_table;
+
+
 
 typedef struct
 {
@@ -443,26 +452,8 @@ return -1; //non dec
 int verifierAffectation(char entite1[], char entite2[]){
     char type1[20];
     char type2[20];
-       
-        listTs current = t; 
-        while (current != NULL) {
-            if (strcmp(current->info.nomEntite, entite1) == 0) {
-                strcpy(type1, current->info.type); 
-                break; 
-            }
-            current = current->suiv; 
-        }
-
-        
-        current = t; 
-        while (current != NULL) {
-            if (strcmp(current->info.nomEntite, entite2) == 0) {
-                strcpy(type2, current->info.type); 
-                break; 
-            }
-            current = current->suiv; 
-        }
-        
+        searchTypeIdf(entite1,type1);
+        searchTypeIdf(entite2,type2);
         return isCompatible(type1, type2);
 }
 
@@ -480,43 +471,109 @@ int isCompatible(char type1[], char type2[]) {
     return -1; 
 }
 
-int getType(char nomEntite[]){
+// int getType(char nomEntite[]){
+// listTs current = t;
+// while (current != NULL) {
+//     if (strcmp(current->info.nomEntite, nomEntite) == 0) {
+//        if(strcmp(current->info.type,"Integer")==0) return 0;
+//        if(strcmp(current->info.type,"Float")==0) return 1;
+//     }
+//     current = current->suiv;
+// }
+// return -1; //non entite found
+// }
+
+int getvalueInt(char nomEntite[]){
 listTs current = t;
 while (current != NULL) {
     if (strcmp(current->info.nomEntite, nomEntite) == 0) {
-       if(strcmp(current->info.type,"Integer")==0) return 0;
-       if(strcmp(current->info.type,"Float")==0) return 1;
+       return current->info.val.i_val;
+       
     }
     current = current->suiv;
 }
-return -1; //non entite found
+
+
 }
 
-// int getvalueInt(char nomEntite[]){
-// listTs current = t;
-// while (current != NULL) {
-//     if (strcmp(current->info.nomEntite, nomEntite) == 0) {
-//        return current->info.val;
+float getvalueFloat(char nomEntite[]){
+listTs current = t;
+while (current != NULL) {
+    if (strcmp(current->info.nomEntite, nomEntite) == 0) {
+       return current->info.val.f_val;
        
-//     }
-//     current = current->suiv;
-// }
-// return -1; //non entite found
+    }
+    current = current->suiv;
+}
 
-// }
+}
 
-// float getvalueFloat(char nomEntite[]){
-// listTs current = t;
-// while (current != NULL) {
-//     if (strcmp(current->info.nomEntite, nomEntite) == 0) {
-//        return current->info.val;
+void getvalue(char nomEntite[],int *val_i,float *val_f){
+listTs current = t;
+while (current != NULL) {
+    if (strcmp(current->info.nomEntite, nomEntite) == 0) {
+
+        if (strcmp(current->info.type,"Integer")==0){
+        *val_i=current->info.val.i_val;
+
+        }else if(strcmp(current->info.type,"Float")==0) {
+        *val_f=current->info.val.f_val;
+        }
+
+
        
-//     }
-//     current = current->suiv;
-// }
-// return -1; //non entite found
+    }
+    current = current->suiv;
+}
 
-// }
+}
+
+int verifierDiv( Type_table T[],char V[][1],int size){
+int i ;
+// int size=sizeof(T);
+
+for(i=0;i<size - 1;i++){
+    
+    if(T[i+1].type_val==0){
+        if(T[i+1].i_val == 0 && V[i][0] == '/'){
+            return -1;
+        }
+    }
+    if(T[i+1].type_val==1){
+        if(T[i+1].i_val == 0 && V[i][0] == '/'){
+            return -1;
+        }
+    }
+    if(T[i+1].type_val==2){
+        int x1;
+        float x2;
+        char x3[20];
+        
+        searchTypeIdf(T[i+1].s_val,x3);
+        
+        getvalue(T[i+1].s_val,&x1,&x2);
+        if(strcmp(x3,"Integer")==0){
+             if(x1 == 0 && V[i][0] == '/'){
+            return -1;
+            }
+            
+        }
+
+        if(strcmp(x3,"Float")==0){
+             if(x2 == 0 && V[i][0] == '/'){
+            return -1;
+            }
+            
+        }
+
+         }
+    }
+    return 0;
+
+}
+
+
+
 
 
 
