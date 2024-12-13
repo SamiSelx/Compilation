@@ -23,10 +23,6 @@ typedef struct
     char nomEntite[20];
     char codeEntite[20];
     char type[20];
-    // int val;   // "-":pas de val
-    // int i_val;
-    // float f_val;
-    // int is_i_val;
     ValueType val;
     int hasvalue;
     char Constant[4]; // non:n'est pas const     oui :cst
@@ -192,41 +188,6 @@ void inserer(char nomEntite[], char codeEntite[], char type[],char Constant[],in
     }
 }
 
-// listTs recherche(char entite[])
-// {
-//     listTs p = t;
-//     while(p != NULL){
-//         if(strcmp(entite,p->info.nomEntite) == 0){
-//             return p;
-//         }
-//         p = p->suiv;
-//     }
-//     return NULL;
-// }
-
-// void inserer(char entite[], char code[])
-// {
-//     if (recherche(entite) == NULL)
-//     {
-//         if (t == NULL)
-//         {
-//             t = (listTs)malloc(sizeof(celluleTs));
-//             strcpy(t->info.nomEntite, entite);
-//             strcpy(t->info.codeEntite, code);
-//             t->suiv = NULL;
-//             q = t;
-//         }
-//         else
-//         {
-//             listTs nouv = (listTs)malloc(sizeof(celluleTs));
-//             strcpy(nouv->info.nomEntite, entite);
-//             strcpy(nouv->info.codeEntite, code);
-//             nouv->suiv = NULL;
-//             q->suiv = nouv;
-//             q = nouv;
-//         }
-//     }
-// }
 
 void affiche()
 {
@@ -343,14 +304,10 @@ void updateValue(char nomEntite[],ValueType val ){
     listTs p = t;
     while(p != NULL){
         if(strcmp(p->info.nomEntite,nomEntite) == 0){
-            // printf("\n entite %s  %d\n",p->info.nomEntite,f_val);
-            // printf("entite %s has %f",p->info.nomEntite,p->info.f_val);
+            
             p->info.val.is_i_val = val.is_i_val;
             p->info.val.i_val = val.i_val;
             p->info.val.f_val = val.f_val;
-            // p->info.val.is_i_val = value.is_i_val;
-            // p->info.val.i_val = value.i_val;
-            // p->info.val.f_val = value.f_val;
             p->info.hasvalue = 1;
         }
         p = p->suiv;
@@ -409,7 +366,6 @@ int checkTypeFormat(char formatTable[],char idfTable[][50],int size){
     return 0;
 }
 
-// will use it later to make function checkTypeFormat readable
 void searchTypeIdf(char nomEntite[],char typeIdf[]){
     listTs p = t;
     while(p != NULL){
@@ -420,20 +376,6 @@ void searchTypeIdf(char nomEntite[],char typeIdf[]){
     }
 }
 
-// Type | Declaration PART
-
-// int  doubleDeclaration(char nomEntite[]){
-//   //doubleDeclaration--> 0: ok (pas de double dec) c'est une dec pour la premiere fois
-//   //                  -->-1 : c'est une double dec
-// listTs current = t;
-// while (current != NULL) {
-//     if (strcmp(current->info.nomEntite, nomEntite) == 0 && strcmp(current->info.type, "") == 0) {
-//         return 0; 
-//     }
-//     current = current->suiv;
-// }
-// return -1; 
-// }
 
 int  NonDeclaration(char nomEntite[]){
         //si les deux champ sont remplie nomEntite Type   
@@ -471,42 +413,6 @@ int isCompatible(char type1[], char type2[]) {
     return -1; 
 }
 
-// int getType(char nomEntite[]){
-// listTs current = t;
-// while (current != NULL) {
-//     if (strcmp(current->info.nomEntite, nomEntite) == 0) {
-//        if(strcmp(current->info.type,"Integer")==0) return 0;
-//        if(strcmp(current->info.type,"Float")==0) return 1;
-//     }
-//     current = current->suiv;
-// }
-// return -1; //non entite found
-// }
-
-int getvalueInt(char nomEntite[]){
-listTs current = t;
-while (current != NULL) {
-    if (strcmp(current->info.nomEntite, nomEntite) == 0) {
-       return current->info.val.i_val;
-       
-    }
-    current = current->suiv;
-}
-
-
-}
-
-float getvalueFloat(char nomEntite[]){
-listTs current = t;
-while (current != NULL) {
-    if (strcmp(current->info.nomEntite, nomEntite) == 0) {
-       return current->info.val.f_val;
-       
-    }
-    current = current->suiv;
-}
-
-}
 
 void getvalue(char nomEntite[],int *val_i,float *val_f){
 listTs current = t;
@@ -530,8 +436,6 @@ while (current != NULL) {
 
 int verifierDiv( Type_table T[],char V[][1],int size){
 int i ;
-// int size=sizeof(T);
-
 for(i=0;i<size - 1;i++){
     
     if(T[i+1].type_val==0){
@@ -606,4 +510,18 @@ int checkListCompatible(Type_table T[],char type1[],int size){
         return 0; //la table des operandes est compatible avec le idf1
     }
 }
+
+int getTailleTable( char nomEntite[]){
+
+listTs current = t;
+while (current != NULL) {
+    if (strcmp(current->info.nomEntite, nomEntite) == 0) {
+      return current -> info.taille_table;
+       
+    }
+    current = current->suiv;
+}
+return -1;
+}
+
 
