@@ -216,6 +216,15 @@ else if(checkConstValue($1) == 0)
     else if(checkConstValue($1) == 0) 
     {printf("Erreur semantique: modification de la valeur d'une constante a la ligne %d a la colonne %d \n",nb_ligne,col);}
     else if(isTable($1) == 0) printf("Erreur Semantique: Entite %s n'est pas table(array), a la ligne:%d colonne:%d \n",$1,nb_ligne,col);
+    
+    //LE CAS : T[10] <-- UNE VAL  MAIS LA TABLE ET DE T[3]  3<10
+     else if(getTailleTable($1) < $3){
+        printf("Erreur Semantique :  Depassement de la taille d un tableau ligne %d  colonne %d .\n",nb_ligne,col);
+     }
+
+
+
+//Tout les verifications sont fait avant de passer vers l'affectation  
     else {
         char type1[20];
         char type2[20];
@@ -238,10 +247,7 @@ else if(checkConstValue($1) == 0)
         printf("Erreur Semantique: (list passed): Incompatibilite de types ligne: %d colonne: %d.\n",nb_ligne,col);
        }
        }
-//LE CAS : T[10] <-- UNE VAL  MAIS LA TABLE ET DE T[3]  3<10
-     if(getTailleTable($1) < $3){
-        printf("Erreur Semantique :  Depassement de la taille d un tableau ligne %d  colonne %d .\n",nb_ligne,col);
-     }
+
 
 } 
 
