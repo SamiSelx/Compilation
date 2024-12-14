@@ -444,7 +444,7 @@ for(i=0;i<size - 1;i++){
         }
     }
     if(T[i+1].type_val==1){
-        if(T[i+1].i_val == 0 && V[i][0] == '/'){
+        if(T[i+1].f_val == 0 && V[i][0] == '/'){
             return -1;
         }
     }
@@ -483,7 +483,7 @@ int checkListCompatible(Type_table T[],char type1[],int size){
     int i=0;
     char type2[20];
 
-   while(i<=size){
+   while(i<size){
 
     if(T[i].type_val==0){
        //integer
@@ -506,9 +506,9 @@ int checkListCompatible(Type_table T[],char type1[],int size){
         }
         i++;
     }
-    if(i==size){
+   
         return 0; //la table des operandes est compatible avec le idf1
-    }
+  
 }
 
 int getTailleTable( char nomEntite[]){
