@@ -10,7 +10,7 @@
         int i_val;
         float f_val;
         char s_val[20];
-        int type_val;    //0:int  1:float  2:string
+        int type_val;    //0:int  1:float  2:idf
     } Type_table;
 
     Type_table T[50];
@@ -18,9 +18,6 @@
     int nb_ligne=1; 
     int col=1;
     char sauvType[20];
-    // int sauvValueInt;
-    // float sauvValueFloat;
-    // int isInt;
     ValueType val;
     int io_lib = 0;
     int lang_lib = 0;
@@ -91,7 +88,6 @@ Type_dec:
     };
     |mc_const Type idf '[' cst ']' '=' Constant pvg 
     {
-        // updateType($3,sauvType);  updateValue($3,val);sauvegarderTailleTable($3,$5);
         updateConst($3,"oui");
         if($5 <= 0){
             printf("Erreur semantique: la taille de tableau %s doit etre superieure a 0, a la ligne %d a la colonne %d\n",$3,nb_ligne,col);
@@ -171,6 +167,7 @@ Inst_write: mc_write '(' string ')' pvg
     }; 
 List_idf_io: idf ',' List_idf_io 
         {   
+
             strcpy(idfTable[indexIdf],$1);
             indexIdf++;
         }
@@ -186,7 +183,7 @@ if(verifierDiv(T,V,index_Op) == -1){
 }
 if(NonDeclaration($1)== -1){updateConst($1,""); printf("Erreur Semantique: Entite %s non declarer ligne:%d colonne:%d \n",$1,nb_ligne,col);  }
 else if(checkConstValue($1) == 0) 
-    {printf("Erreur semantique: modification de la valeur d'une constante a la ligne %d a la colonne %d \n",nb_ligne,col);}
+    {printf("Erreur semantique: modification de la valeur d'une constante %s a la ligne %d a la colonne %d \n",$1,nb_ligne,col);}
     else  {
         char type1[20];
         char type2[20];
@@ -212,10 +209,6 @@ else if(checkConstValue($1) == 0)
 
 
        } 
-
-      
-
-
 }
     | idf '[' cst ']' affectation  Operation pvg
     {   
@@ -230,24 +223,30 @@ else if(checkConstValue($1) == 0)
         if(val.is_i_val==1) strcpy(type2,"Integer");
         if(val.is_i_val==0) strcpy(type2,"Float");
         if(val.is_i_val==-1) searchTypeIdf(sauvIdf2,type2);
-      //LE CAS: IDF<--- UN SEULE ARGUMENT 
+//LE CAS: T[cst]<--- UN SEULE ARGUMENT 
        if(isCompatible(type1,type2) == -1 && index_Op==1){
         printf("Erreur Semantique: (one arg passed): Incompatibilite de types  ligne %d colonne %d\n",nb_ligne,col);
         }else {
             updateValue($1,val);
-         }
+      }
+
          
-//LE CAS : IDF <-- LIST _AFFECT
+//LE CAS : T[cst] <-- LIST _AFFECT
         if(strcmp(type1,"Integer")==0 && index_Op>1){
         // on verifie type1='integer'?  ---> le float accept tout affect (int or float ) on a pas le cas string pour le verifier
        if (checkListCompatible(T,type1,index_Op)==-1 ){
         printf("Erreur Semantique: (list passed): Incompatibilite de types ligne: %d colonne: %d.\n",nb_ligne,col);
        }
        }
+//LE CAS : T[10] <-- UNE VAL  MAIS LA TABLE ET DE T[3]  3<10
+     if(getTailleTable($1) < $3){
+        printf("Erreur Semantique :  Depassement de la taille d un tableau ligne %d  colonne %d .\n",nb_ligne,col);
+     }
 
-       } 
-    }
-    ;
+} 
+
+};
+    
     
 Operation: Value Op_arithmetiques Operation | Value ;
 
@@ -265,7 +264,7 @@ else {getvalue($1,&sauvconst,&sauvfloat);}
 } 
 | idf'[' cst ']'
 {//div par zero : for Array
-    strcpy(sauvIdf2,$1);
+strcpy(sauvIdf2,$1);
 val.is_i_val=-1;
 if(NonDeclaration($1)== -1) {
     updateConst($1,"");
@@ -279,21 +278,14 @@ if(NonDeclaration($1)== -1) {
 Constant :
      cst {
         sauvconst=$1; val.i_val = $1; val.is_i_val = 1; T[index_Op].i_val=$1;
-        T[index_Op].type_val=0;    //
+        T[index_Op].type_val=0;    //int
         index_Op++;}
      | reel {
         sauvfloat=$1; val.f_val = $1; val.is_i_val = 0; T[index_Op].f_val=$1;
-        T[index_Op].type_val=1;    //
-        index_Op++;};
-
-// Second Method:
-/* Operation: Operation '+' Exp | Operation '-' Exp | Exp;
-Exp: Value '*' Exp | Value '/' Exp | Value;
-Value: idf | Constant | '(' Operation ')' ; */
-
-/* Comment: Comment_one_line | mc_cmnt_multi;
-Comment_one_line: mc_cmnt_one_line | mc_cmnt_one_line2; */
-
+        T[index_Op].type_val=1;    //float
+        index_Op++;
+        
+        };
 
 Inst_for: mc_for '(' Declaration pvg List_Condition pvg Compteur ')' mc_do List_inst mc_endfor ;
 Declaration:idf affectation Value
