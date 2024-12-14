@@ -506,8 +506,21 @@ int checkListCompatible(Type_table T[],char type1[],int size){
         }
         i++;
     }
-   
-        return 0; //la table des operandes est compatible avec le idf1
+    return 0; //la table des operandes est compatible avec le idf1
+    
+}
+
+int isTable(char nomEntite[]){
+    listTs p = t;
+    while (p != NULL)
+    {
+        if(strcmp(p->info.nomEntite,nomEntite)==0){
+            if(p->info.isTable != 1) return 0;
+            return 1;
+        }
+        p = p->suiv;
+    }
+    return -1; // idf n'existe pas
   
 }
 
