@@ -4,11 +4,16 @@ import ISIL.lang;
 Programme L3_ISIL_A
 PDec
 // Declaration des variables
-Integer X;
-Float Z[1];
-
+Float X;
+Integer K;
+Float Z;
+Float T[50];
 InDebut
-Z[1] <-- 3.6;
-X <-- Z;      //test for an array 
-X <-- Z - 2;
+Z<-- 15.7;
+T[5] <-- 4;
+T[2] <-- 10.5;
+T[0] <-- Z;
+Z <-- T[2];
+X <-- T[5];
+//Write("gfgf %d",T[10]);
 InFin

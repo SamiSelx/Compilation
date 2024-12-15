@@ -8,13 +8,14 @@ typedef struct
     float f_val;
     int is_i_val;
 } ValueType;
+
 typedef struct
-  {
-        int i_val;
-        float f_val;
-        char s_val[20];
-        int type_val;    //0:int  1:float  2:string
-    } Type_table;
+{
+    int i_val;
+    float f_val;
+    char s_val[20];
+    int type_val;    //0:int  1:float  2:string
+} Type_table;
 
 
 
@@ -36,6 +37,15 @@ typedef struct
     char codeEntite[20];
 } TypeSM;
 
+typedef struct
+{
+    int adresse;
+    char nomEntite[20];
+    ValueType val;
+    int hasvalue;
+    int index;
+} TypeArray;
+
 // cellule table de symbole
 typedef struct celluleTs
 {
@@ -50,13 +60,72 @@ typedef struct celluleSM
     struct celluleSM *suiv;
 } celluleSM;
 
+
+// cellule Array
+typedef struct celluleArray
+{
+    TypeArray info;
+    struct celluleArray *suiv;
+} celluleArray;
+
 // declaration des listes
 typedef struct celluleSM *listSM;
 typedef struct celluleTs *listTs;
+typedef struct celluleArray *listArray;
 
 listTs t, q;
 listSM tS, qS;
 listSM tM, qM;
+listArray tArray,qArray;
+int adresse = 0;
+
+// appele dans la partie declaration pour reserver les cases
+void allouerArray(char nomEntite[],int taille){
+    listArray p = tArray;
+    int i = 0;
+    tArray = (listArray)malloc(sizeof(celluleArray));
+    strcpy(tArray->info.nomEntite, nomEntite);
+    tArray->info.index = i;
+    tArray->info.hasvalue = 0;
+    tArray->info.adresse = adresse;
+    // tArray->info.val = NULL;
+    tArray->suiv = NULL;
+    qArray = tArray;
+    i++;
+    adresse++;
+    while(i<taille){
+        listArray nouv = (listArray)malloc(sizeof(celluleArray));
+        strcpy(nouv->info.nomEntite, nomEntite);
+        nouv->info.index = i;
+        nouv->info.hasvalue = 0;
+        nouv->info.adresse = adresse;
+        // nouv->info.val = NULL;
+        nouv->suiv = NULL;
+        qArray->suiv = nouv;
+        qArray = nouv;
+        i++;
+        adresse++;
+    }
+}
+
+void updateValueArray(char nomEntite[],ValueType val,int index){
+    listArray p = tArray;
+    int i = 0;
+    while(p != NULL){
+        if(strcmp(p->info.nomEntite,nomEntite) == 0){
+            while(i<index){
+                p = p->suiv;
+                i++;
+            }
+            p->info.val.is_i_val = val.is_i_val;
+            p->info.val.i_val = val.i_val;
+            p->info.val.f_val = val.f_val;
+            p->info.hasvalue = 1;
+            break;
+        }
+        p = p->suiv;
+    }
+}
 
 int recherche(char nomEntite[], int y)
 {
@@ -261,6 +330,31 @@ void affiche()
         }
     }
     printf("____________________________________\n");
+
+    // Array:
+    printf("\n/***************Table ARRAY ******************/\n");
+
+    printf("____________________________________________________\n");
+
+    printf("\t| NomEntite     |   Value   | index      | \n");
+
+    printf("____________________________________________________\n");
+
+    
+        listArray p = tArray;
+        while (p != NULL)
+        {
+            if(p->info.hasvalue != 1){
+                printf("\t|%11s | %12s |%12d |\n", p->info.nomEntite, "--------",p->info.index);
+            } else {
+                if(p->info.val.is_i_val == 0){
+                    printf("\t|%11s | %12f |%12d |\n", p->info.nomEntite,  p->info.val.f_val,p->info.index);
+                } else printf("\t|%11s | %12d |%12d |\n", p->info.nomEntite,  p->info.val.i_val,p->info.index);
+            }
+            p = p->suiv;
+        }
+    
+    printf("____________________________________\n");
 }
 
 void updateType(char nomEntite[], char newType[]) {
@@ -300,19 +394,6 @@ int checkConstValue(char nomEntite[]){
     return -1;
 }
 
-void updateValue(char nomEntite[],ValueType val ){
-    listTs p = t;
-    while(p != NULL){
-        if(strcmp(p->info.nomEntite,nomEntite) == 0){
-            
-            p->info.val.is_i_val = val.is_i_val;
-            p->info.val.i_val = val.i_val;
-            p->info.val.f_val = val.f_val;
-            p->info.hasvalue = 1;
-        }
-        p = p->suiv;
-    }
-}
 
 void sauvegarderTailleTable(char nomEntite[],int taille){
     listTs p = t;
@@ -421,13 +502,11 @@ while (current != NULL) {
 
         if (strcmp(current->info.type,"Integer")==0){
         *val_i=current->info.val.i_val;
-
+        *val_f = -1;
         }else if(strcmp(current->info.type,"Float")==0) {
         *val_f=current->info.val.f_val;
-        }
-
-
-       
+        *val_i = -1;
+        }  
     }
     current = current->suiv;
 }
@@ -538,3 +617,44 @@ return -1;
 }
 
 
+void updateValue(char nomEntite[],ValueType val ){
+    listTs p = t;
+    while(p != NULL){
+        if(strcmp(p->info.nomEntite,nomEntite) == 0){   
+            // we don't have idf that we want his value
+            
+            // if(val.is_i_val == -1){
+            //     char type[20];
+            //     int xEntier;
+            //     float xReel;
+            //     getvalue(nomEntite,&xEntier,&xReel);
+            //     printf("val float %f entier %d",xEntier,xReel);
+            //     searchTypeIdf(nomEntite,type);
+            //     if(strcmp(type,"Integer") == 0){
+            //         val.is_i_val = 1;
+            //         val.i_val = xEntier;
+            //     }
+            //     if(strcmp(type,"Float") == 0){
+            //         val.is_i_val = 0;
+            //         val.f_val = xReel;
+            //     }
+            // }
+            p->info.val.is_i_val = val.is_i_val;
+            p->info.val.i_val = val.i_val;
+            p->info.val.f_val = val.f_val;
+            p->info.hasvalue = 1;
+        }
+        p = p->suiv;
+    }
+}
+void getvalueArray(char nomEntite[],int index,ValueType *val){
+listArray current = tArray;
+while (current != NULL) {
+    if (strcmp(current->info.nomEntite, nomEntite) == 0 && current->info.index == index) {
+        val->f_val =  current->info.val.f_val;
+        val->i_val =  current->info.val.i_val;
+        val->is_i_val =  current->info.val.is_i_val;
+    }
+    current = current->suiv;
+}
+}
