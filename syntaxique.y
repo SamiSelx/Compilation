@@ -43,7 +43,8 @@
 }
 
 
-%token  mc_import  mc_io mc_lang pvg mc_prog mc_dec  mc_const  mc_debut mc_fin mc_input mc_write  mc_for mc_endfor mc_do inc  affectation mc_if mc_endif mc_else  sup_ou_egal inf_ou_egal egal diff mc_ou mc_et dec
+%token  mc_import  mc_io mc_lang pvg mc_prog mc_dec  mc_const  mc_debut mc_fin mc_input mc_write mc_for mc_endfor
+        mc_do inc  affectation mc_if mc_endif mc_else  sup_ou_egal inf_ou_egal egal diff mc_ou mc_et dec
 %token <str>idf string <entier>cst <numvrg>reel <str> mc_integer <str>mc_float  <str> '/' '+' '-' '*'
 %type <str>List_idf_io
 %left mc_ou
@@ -68,23 +69,23 @@ List_dec:  Type_dec List_dec |;
 Type_dec:
     Type List_idf 
     |mc_const Type idf '=' Constant pvg {
-    if (NonDeclaration($3) != 0){ 
-    updateConst($3,"oui");
-    updateType($3,sauvType);
-    updateValue($3,val);
-  }else{
-      printf("Erreur Semantique: double declation de %s, a la ligne %d , colonne %d\n", $3, nb_ligne,col);
-  }
-  
+        // Double declaration: entite declarer => double decalaration
+        if (NonDeclaration($3) != 0){ 
+            updateConst($3,"oui");
+            updateType($3,sauvType);
+            updateValue($3,val);
+        }else{
+            printf("Erreur Semantique: double declation de %s, a la ligne %d , colonne %d\n", $3, nb_ligne,col);
+        }
     } 
     |mc_const Type idf pvg {
-  
-      if (NonDeclaration($3)!=0){ 
+        // Double declaration: entite declarer => double decalaration
+        if (NonDeclaration($3)!=0){ 
           updateConst($3,"oui");
           updateType($3,sauvType);
-      }else{
-          printf("Erreur Semantique: double declation de %s, a la ligne %d , colonne %d\n", $3, nb_ligne,col);
-      }
+        }else{
+            printf("Erreur Semantique: double declation de %s, a la ligne %d , colonne %d\n", $3, nb_ligne,col);
+        }
     };
     |mc_const Type idf '[' cst ']' '=' Constant pvg 
     {
@@ -95,6 +96,7 @@ Type_dec:
             updateType($3,sauvType); 
             updateValue($3,val);
             sauvegarderTailleTable($3,$5);
+            allouerArray($3,$5);
         }
     } 
     |mc_const Type idf '[' cst ']' pvg {
@@ -104,6 +106,7 @@ Type_dec:
     }else {
         updateType($3,sauvType); 
         sauvegarderTailleTable($3,$5);
+        allouerArray($3,$5);
     }
     };
 
@@ -124,6 +127,7 @@ if (NonDeclaration($1)!=0) {
   if($3 <= 0){
         printf("Erreur semantique: la taille de tableau %s doit etre superieure a 0, a la ligne %d a la colonne %d\n",$1,nb_ligne,col);
     }else {
+        allouerArray($1,$3);
         updateType($1,sauvType); 
         sauvegarderTailleTable($1,$3);
     }
@@ -139,11 +143,17 @@ Type:mc_integer {strcpy(sauvType,$1)}|mc_float {strcpy(sauvType,$1)};
 
 Corps: mc_debut List_inst mc_fin;
 
-List_inst: Inst_aff {if(lang_lib == 0) printf("Erreur semantique: bibliotheque ISIL.lang n'est pas declarer, a la ligne %d a la colonne %d\n",nb_ligne,col)}  List_inst 
-        | Inst_lecture {if(io_lib == 0) printf("Erreur semantique: bibliotheque ISIL.io n'est pas declarer, a la ligne %d a la colonne %d\n",nb_ligne,col)} List_inst
-        | Inst_write {if(io_lib == 0) printf("Erreur semantique: bibliotheque ISIL.io n'est pas declarer, a la ligne %d a la colonne %d\n",nb_ligne,col)}  List_inst 
+List_inst: Inst_aff {
+            if(lang_lib == 0) printf("Erreur semantique: bibliotheque ISIL.lang n'est pas declarer, a la ligne %d a la colonne %d\n",nb_ligne,col);
+        }  List_inst 
+        | Inst_lecture {
+            if(io_lib == 0) printf("Erreur semantique: bibliotheque ISIL.io n'est pas declarer, a la ligne %d a la colonne %d\n",nb_ligne,col);
+            } List_inst
+        | Inst_write {
+            if(io_lib == 0) printf("Erreur semantique: bibliotheque ISIL.io n'est pas declarer, a la ligne %d a la colonne %d\n",nb_ligne,col);
+            }  List_inst 
         | Inst_for List_inst 
-        |Inst_if List_inst | ;
+        |   Inst_if List_inst | ;
 Inst_lecture: mc_input '(' string ')' pvg 
             | mc_input '(' string ',' {indexIdf = 0;} List_idf_io')' pvg
             {   
@@ -167,7 +177,6 @@ Inst_write: mc_write '(' string ')' pvg
     }; 
 List_idf_io: idf ',' List_idf_io 
         {   
-
             strcpy(idfTable[indexIdf],$1);
             indexIdf++;
         }
@@ -177,14 +186,16 @@ List_idf_io: idf ',' List_idf_io
             };
 Inst_aff: idf affectation {index_Op_Arith=0; index_Op=0;}Operation  pvg 
 {
-
-if(verifierDiv(T,V,index_Op) == -1){
-    printf("Erreur Semantique: Division par zero, a la ligne:%d colonne:%d \n",nb_ligne,col);
-}
+    strcpy(sauvOp,"");
+    // will use it later (complex cases)
+    // if(verifierDiv(T,V,index_Op) == -1){
+    //     printf("Erreur Semantique: Division par zero, a la ligne:%d colonne:%d \n",nb_ligne,col);
+    // }
 if(NonDeclaration($1)== -1){updateConst($1,""); printf("Erreur Semantique: Entite %s non declarer ligne:%d colonne:%d \n",$1,nb_ligne,col);  }
 else if(checkConstValue($1) == 0) 
     {printf("Erreur semantique: modification de la valeur d'une constante %s a la ligne %d a la colonne %d \n",$1,nb_ligne,col);}
-    else  {
+    else if(isTable($1) != 0) printf("Erreur Semantique: Entite %s n'est pas un variable simple (est une table), a la ligne:%d colonne:%d \n",$1,nb_ligne,col);
+     else {
         char type1[20];
         char type2[20];
         searchTypeIdf($1,type1);
@@ -212,6 +223,10 @@ else if(checkConstValue($1) == 0)
 }
     | idf '[' cst ']' affectation  Operation pvg
     {   
+    // will use it later (complex cases)
+    //         if(verifierDiv(T,V,index_Op) == -1){
+    //     printf("Erreur Semantique: Division par zero, a la ligne:%d colonne:%d \n",nb_ligne,col);
+    // }
     if(NonDeclaration($1)== -1){updateConst($1,""); printf("Erreur Semantique: Entite %s non declarer ligne:%d colonne:%d \n",$1,nb_ligne,col);  }
     else if(checkConstValue($1) == 0) 
     {printf("Erreur semantique: modification de la valeur d'une constante a la ligne %d a la colonne %d \n",nb_ligne,col);}
@@ -236,7 +251,8 @@ else if(checkConstValue($1) == 0)
        if(isCompatible(type1,type2) == -1 && index_Op==1){
         printf("Erreur Semantique: (one arg passed): Incompatibilite de types  ligne %d colonne %d\n",nb_ligne,col);
         }else {
-            updateValue($1,val);
+            // updateValue($1,val);
+            updateValueArray($1,val,$3);
       }
 
          
@@ -254,7 +270,20 @@ else if(checkConstValue($1) == 0)
 };
     
     
-Operation: Value Op_arithmetiques Operation | Value ;
+Operation: Value {    
+    if(strcmp(sauvOp,"/")==0 && (sauvconst==0 || sauvfloat==0)){
+        printf("Erreur Semantique: Division par zero, a la ligne:%d colonne:%d \n",nb_ligne,col);
+        sauvconst = -1; sauvfloat=-1;  
+    }  
+    } Op_arithmetiques Operation 
+
+ | Value
+    {    
+        if(strcmp(sauvOp,"/")==0 && (sauvconst==0 || sauvfloat==0)){
+            printf("Erreur Semantique: Division par zero, a la ligne:%d colonne:%d \n",nb_ligne,col);
+            sauvconst = -1; sauvfloat=-1;
+        }  
+    } ;
 
 Value: idf 
 {
@@ -264,8 +293,24 @@ strcpy(T[index_Op].s_val,$1);
 T[index_Op].type_val=2;    //
 index_Op++;
 val.is_i_val=-1;
-if(NonDeclaration($1) == -1) {updateConst($1,""); printf("Erreur Semantique: Entite %s non declarer ligne:%d colonne:%d \n",$1,nb_ligne,col);  }
-else {getvalue($1,&sauvconst,&sauvfloat);}
+if(NonDeclaration($1) == -1) {
+    updateConst($1,"");
+    printf("Erreur Semantique: Entite %s non declarer ligne:%d colonne:%d \n",$1,nb_ligne,col);  
+    } if(isTable($1) != 0) printf("Erreur Semantique: Entite %s n'est pas un variable simple (est une table), a la ligne:%d colonne:%d \n",$1,nb_ligne,col);
+    else {
+        char typeIdf[20];
+        getvalue($1,&sauvconst,&sauvfloat);
+        searchTypeIdf($1,typeIdf);
+        // if(typeIdf == "Integer") val.i_val
+        if(strcmp(typeIdf,"Integer") == 0){
+            val.is_i_val = 1;
+            val.i_val = sauvconst;
+        }
+        if(strcmp(typeIdf,"Float") == 0){
+            val.is_i_val = 0;
+            val.f_val = sauvfloat;
+        }
+    }
 
 } 
 | idf'[' cst ']'
@@ -276,9 +321,12 @@ if(NonDeclaration($1)== -1) {
     updateConst($1,"");
     printf("Erreur Semantique: Entite %s non declarer ligne:%d colonne:%d \n",$1,nb_ligne,col);  
     }else if(isTable($1) == 0) printf("Erreur Semantique: Entite %s n'est pas table(array), a la ligne:%d colonne:%d \n",$1,nb_ligne,col);
-     else if(getTailleTable($1) < $3){
-        printf("Erreur Semantique :  Depassement de la taille d un tableau ligne %d  colonne %d .\n",nb_ligne,col);
-     }
+  else if(getTailleTable($1) < $3){
+          printf("Erreur Semantique :  Depassement de la taille d un tableau ligne %d  colonne %d .\n",nb_ligne,col);
+       }
+    else{
+        getvalueArray($1,$3,&val);
+    }
 
 }
 |Constant
