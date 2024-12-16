@@ -8,17 +8,16 @@ Float X;
 Integer K;
 Float Z;
 Float T[10];
-Float H[10];
+final Float H[10];
 InDebut
 Z<-- 0;
 T[5] <-- 4;
 T[2] <-- 10.5;
 H[9] <-- T[5];
 T[0] <-- Z;
-T[1] <--0;
+T[45] <--0;
 //Z <-- T[2]/Z + 0/7;
 X <-- T[5];
-F
 //Write("gfgf %d",T[10]);
 // add function allouer to const
 InFin

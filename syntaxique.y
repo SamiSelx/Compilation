@@ -96,6 +96,7 @@ Type_dec:
             updateType($3,sauvType); 
             updateValue($3,val);
             sauvegarderTailleTable($3,$5);
+            allouerArray($3,$5);
         }
     } 
     |mc_const Type idf '[' cst ']' pvg {
@@ -105,6 +106,7 @@ Type_dec:
     }else {
         updateType($3,sauvType); 
         sauvegarderTailleTable($3,$5);
+        allouerArray($3,$5);
     }
     };
 
