@@ -317,6 +317,7 @@ if(NonDeclaration($1) == -1) {
 {
 strcpy(sauvIdf2,$1);
 val.is_i_val=-1;
+
 if(NonDeclaration($1)== -1) {
     updateConst($1,"");
     printf("Erreur Semantique: Entite %s non declarer ligne:%d colonne:%d \n",$1,nb_ligne,col);  
@@ -324,8 +325,15 @@ if(NonDeclaration($1)== -1) {
   else if(getTailleTable($1) < $3){
           printf("Erreur Semantique :  Depassement de la taille d un tableau ligne %d  colonne %d .\n",nb_ligne,col);
        }
+        
     else{
-        getvalueArray($1,$3,&val);
+        getvalueArray($1,$3,&val); 
+    }
+
+     //verifer si T[index] a une valeur pour l'affecter a une autre variable x<-- T[2] a une val ou pas
+    if (searchValueArray($1,$3)==0){
+    printf("Erreur Semantique: La table %s est declarer mais n'a pas une valeur pour l 'index %d . ligne :%d colonne: %d\n",$1,$3,nb_ligne,col);
+
     }
 
 }
