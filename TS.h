@@ -83,16 +83,18 @@ int adresse = 0;
 void allouerArray(char nomEntite[],int taille){
     listArray p = tArray;
     int i = 0;
-    tArray = (listArray)malloc(sizeof(celluleArray));
-    strcpy(tArray->info.nomEntite, nomEntite);
-    tArray->info.index = i;
-    tArray->info.hasvalue = 0;
-    tArray->info.adresse = adresse;
-    // tArray->info.val = NULL;
-    tArray->suiv = NULL;
-    qArray = tArray;
-    i++;
-    adresse++;
+    if(adresse == 0){
+        tArray = (listArray)malloc(sizeof(celluleArray));
+        strcpy(tArray->info.nomEntite, nomEntite);
+        tArray->info.index = i;
+        tArray->info.hasvalue = 0;
+        tArray->info.adresse = adresse;
+        // tArray->info.val = NULL;
+        tArray->suiv = NULL;
+        qArray = tArray;
+        i++;
+        adresse++;
+    }
     while(i<taille){
         listArray nouv = (listArray)malloc(sizeof(celluleArray));
         strcpy(nouv->info.nomEntite, nomEntite);
@@ -336,7 +338,7 @@ void affiche()
 
     printf("____________________________________________________\n");
 
-    printf("\t| NomEntite     |   Value   | index      | \n");
+    printf("\t| Adresse    | NomEntite     |   Value   | index      | \n");
 
     printf("____________________________________________________\n");
 
@@ -345,11 +347,11 @@ void affiche()
         while (p != NULL)
         {
             if(p->info.hasvalue != 1){
-                printf("\t|%11s | %12s |%12d |\n", p->info.nomEntite, "--------",p->info.index);
+                printf("\t| @%11d |%12s | %12s |%12d |\n",p->info.adresse, p->info.nomEntite, "--------",p->info.index);
             } else {
                 if(p->info.val.is_i_val == 0){
-                    printf("\t|%11s | %12f |%12d |\n", p->info.nomEntite,  p->info.val.f_val,p->info.index);
-                } else printf("\t|%11s | %12d |%12d |\n", p->info.nomEntite,  p->info.val.i_val,p->info.index);
+                    printf("\t| @%11d|%12s | %12f |%12d |\n", p->info.adresse,p->info.nomEntite,  p->info.val.f_val,p->info.index);
+                } else printf("\t| @%11d|%12s | %12d |%12d |\n", p->info.adresse,p->info.nomEntite,  p->info.val.i_val,p->info.index);
             }
             p = p->suiv;
         }
