@@ -336,11 +336,11 @@ void affiche()
     // Array:
     printf("\n/***************Table ARRAY ******************/\n");
 
-    printf("____________________________________________________\n");
+    printf("__________________________________________________________________\n");
 
-    printf("\t| Adresse    | NomEntite     |   Value   | index      | \n");
+    printf("\t| Adresse    | NomEntite     |   Value      | index       | \n");
 
-    printf("____________________________________________________\n");
+    printf("__________________________________________________________________\n");
 
     
         listArray p = tArray;
@@ -350,8 +350,8 @@ void affiche()
                 printf("\t| @%11d |%12s | %12s |%12d |\n",p->info.adresse, p->info.nomEntite, "--------",p->info.index);
             } else {
                 if(p->info.val.is_i_val == 0){
-                    printf("\t| @%11d|%12s | %12f |%12d |\n", p->info.adresse,p->info.nomEntite,  p->info.val.f_val,p->info.index);
-                } else printf("\t| @%11d|%12s | %12d |%12d |\n", p->info.adresse,p->info.nomEntite,  p->info.val.i_val,p->info.index);
+                    printf("\t| @%11d |%12s | %12f |%12d |\n", p->info.adresse,p->info.nomEntite,  p->info.val.f_val,p->info.index);
+                } else printf("\t| @%11d |%12s | %12d |%12d |\n", p->info.adresse,p->info.nomEntite,  p->info.val.i_val,p->info.index);
             }
             p = p->suiv;
         }
