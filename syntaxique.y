@@ -5,22 +5,35 @@
         float f_val;
         int is_i_val;
     } ValueType;
+    typedef struct
+    {
+        int i_val;
+        float f_val;
+        char s_val[20];
+        int type_val;    //0:int  1:float  2:idf
+    } Type_table;
+
+    Type_table T[50];
+    char V[50][1];
     int nb_ligne=1; 
     int col=1;
     char sauvType[20];
-    // int sauvValueInt;
-    // float sauvValueFloat;
-    // int isInt;
     ValueType val;
     int io_lib = 0;
     int lang_lib = 0;
     int indexIdf = 0;
+    int index_Op_Arith = 0;
+    int index_Op = 0;
     char formatTable[50];
     char idfTable[50][50];
     char sauvIdf2[20];
-    int sauvconst;
-    float sauvfloat;
+
+
+    int sauvconst=-1;
+    float sauvfloat=-1;
     char sauvOp[1];
+    char type[20];
+
 %}
 
 %union{
@@ -31,7 +44,7 @@
 
 
 %token  mc_import  mc_io mc_lang pvg mc_prog mc_dec  mc_const  mc_debut mc_fin mc_input mc_write  mc_for mc_endfor mc_do inc  affectation mc_if mc_endif mc_else  sup_ou_egal inf_ou_egal egal diff mc_ou mc_et dec
-%token <str>idf string <entier>cst <numvrg>reel <str> mc_integer <str>mc_float  <str> '/'
+%token <str>idf string <entier>cst <numvrg>reel <str> mc_integer <str>mc_float  <str> '/' '+' '-' '*'
 %type <str>List_idf_io
 %left mc_ou
 %left mc_et
@@ -75,7 +88,6 @@ Type_dec:
     };
     |mc_const Type idf '[' cst ']' '=' Constant pvg 
     {
-        // updateType($3,sauvType);  updateValue($3,val);sauvegarderTailleTable($3,$5);
         updateConst($3,"oui");
         if($5 <= 0){
             printf("Erreur semantique: la taille de tableau %s doit etre superieure a 0, a la ligne %d a la colonne %d\n",$3,nb_ligne,col);
@@ -155,7 +167,7 @@ Inst_write: mc_write '(' string ')' pvg
     }; 
 List_idf_io: idf ',' List_idf_io 
         {   
-            // printf("after idf %s %c",$1,formatTabel[0]);
+
             strcpy(idfTable[indexIdf],$1);
             indexIdf++;
         }
@@ -163,65 +175,130 @@ List_idf_io: idf ',' List_idf_io
             strcpy(idfTable[indexIdf],$1);
             indexIdf++
             };
-Inst_aff: idf affectation Operation pvg 
+Inst_aff: idf affectation {index_Op_Arith=0; index_Op=0;}Operation  pvg 
 {
+
+if(verifierDiv(T,V,index_Op) == -1){
+    printf("Erreur Semantique: Division par zero, a la ligne:%d colonne:%d \n",nb_ligne,col);
+}
 if(NonDeclaration($1)== -1){updateConst($1,""); printf("Erreur Semantique: Entite %s non declarer ligne:%d colonne:%d \n",$1,nb_ligne,col);  }
 else if(checkConstValue($1) == 0) 
-    {printf("Erreur semantique: modification de la valeur d'une constante a la ligne %d a la colonne %d \n",nb_ligne,col);}
-    else {
-        if(verifierAffectation($1,sauvIdf2) == -1){printf("Erreur Semantique: Incompatibilite de types entre %s et %s.\n",$1, sauvIdf2);}
-          else {updateValue($1,val);}
+    {printf("Erreur semantique: modification de la valeur d'une constante %s a la ligne %d a la colonne %d \n",$1,nb_ligne,col);}
+    else  {
+        char type1[20];
+        char type2[20];
+        searchTypeIdf($1,type1);
+        if(val.is_i_val==1) strcpy(type2,"Integer");
+        if(val.is_i_val==0) strcpy(type2,"Float");
+        if(val.is_i_val==-1) searchTypeIdf(sauvIdf2,type2);
+
+//LE CAS: IDF<--- UN SEULE ARGUMENT 
+       if(isCompatible(type1,type2) == -1 && index_Op==1){
+            printf("Erreur Semantique (one arg passed): Incompatibilite de types  ligne %d colonne %d\n",nb_ligne,col);
+        }else {
+            updateValue($1,val);
+         }
+         
+//LE CAS : IDF <-- LIST _AFFECT
+        if(strcmp(type1,"Integer")==0 && index_Op>1){
+        // on verifie type1='integer'?  ---> le float accept tout affect (int or float ) on a pas le cas string pour le verifier
+       if (checkListCompatible(T,type1,index_Op)==-1 ){
+        printf("Erreur Semantique (list passed): Incompatibilite de types ligne: %d colonne: %d.\n",nb_ligne,col);
+       }
+       }
+
+
        } 
-
-
 }
-    | idf '[' cst ']' affectation Operation pvg
+    | idf '[' cst ']' affectation  Operation pvg
     {   
     if(NonDeclaration($1)== -1){updateConst($1,""); printf("Erreur Semantique: Entite %s non declarer ligne:%d colonne:%d \n",$1,nb_ligne,col);  }
     else if(checkConstValue($1) == 0) 
     {printf("Erreur semantique: modification de la valeur d'une constante a la ligne %d a la colonne %d \n",nb_ligne,col);}
+    else if(isTable($1) == 0) printf("Erreur Semantique: Entite %s n'est pas table(array), a la ligne:%d colonne:%d \n",$1,nb_ligne,col);
+    
+    //LE CAS : T[10] <-- UNE VAL  MAIS LA TABLE ET DE T[3]  3<10
+     else if(getTailleTable($1) < $3){
+        printf("Erreur Semantique :  Depassement de la taille d un tableau ligne %d  colonne %d .\n",nb_ligne,col);
+     }
+
+
+
+//Tout les verifications sont fait avant de passer vers l'affectation  
     else {
-        if(verifierAffectation($1,sauvIdf2) == -1){printf("Erreur Semantique: Incompatibilite de types entre %s et %s.\n",$1, sauvIdf2);}
-          else {updateValue($1,val);}
-       } 
-    }
-    ;
-    
-Operation: Value Op_arithmetiques Operation 
-{    
-    if(strcmp(sauvOp,"/")==0 && (sauvconst==0 || sauvfloat==0)){printf("Erreur Semantique : division pas zero ligne %d colonne %d\n",nb_ligne,col); sauvconst = -1; sauvfloat=-1;}  
-    
-}
-| Value {if(strcmp(sauvOp,"/")==0 && sauvconst==0){printf("Erreur Semantique : division pas zero ligne %d colonne %d\n",nb_ligne,col); sauvconst = -1; sauvfloat=-1;}  
+        char type1[20];
+        char type2[20];
+        searchTypeIdf($1,type1);
+        if(val.is_i_val==1) strcpy(type2,"Integer");
+        if(val.is_i_val==0) strcpy(type2,"Float");
+        if(val.is_i_val==-1) searchTypeIdf(sauvIdf2,type2);
+//LE CAS: T[cst]<--- UN SEULE ARGUMENT 
+       if(isCompatible(type1,type2) == -1 && index_Op==1){
+        printf("Erreur Semantique: (one arg passed): Incompatibilite de types  ligne %d colonne %d\n",nb_ligne,col);
+        }else {
+            updateValue($1,val);
+      }
+
+         
+//LE CAS : T[cst] <-- LIST _AFFECT
+        if(strcmp(type1,"Integer")==0 && index_Op>1){
+        // on verifie type1='integer'?  ---> le float accept tout affect (int or float ) on a pas le cas string pour le verifier
+       if (checkListCompatible(T,type1,index_Op)==-1 ){
+        printf("Erreur Semantique: (list passed): Incompatibilite de types ligne: %d colonne: %d.\n",nb_ligne,col);
+       }
+       }
+
+
+} 
+
 };
+    
+    
+Operation: Value Op_arithmetiques Operation | Value ;
 
 Value: idf 
 {
 strcpy(sauvIdf2,$1);
-if(NonDeclaration($1) == -1) {updateConst($1,""); printf("Entite %s non declarer ligne:%d colonne:%d \n",$1,nb_ligne,col);  }
+
+strcpy(T[index_Op].s_val,$1);
+T[index_Op].type_val=2;    //
+index_Op++;
+val.is_i_val=-1;
+if(NonDeclaration($1) == -1) {updateConst($1,""); printf("Erreur Semantique: Entite %s non declarer ligne:%d colonne:%d \n",$1,nb_ligne,col);  }
+else {getvalue($1,&sauvconst,&sauvfloat);}
 
 } 
 | idf'[' cst ']'
-{strcpy(sauvIdf2,$1);
-if(NonDeclaration($1)== -1) {updateConst($1,""); printf("Entite %s non declarer ligne:%d colonne:%d \n",$1,nb_ligne,col);  }
+{
+strcpy(sauvIdf2,$1);
+val.is_i_val=-1;
+if(NonDeclaration($1)== -1) {
+    updateConst($1,"");
+    printf("Erreur Semantique: Entite %s non declarer ligne:%d colonne:%d \n",$1,nb_ligne,col);  
+    }else if(isTable($1) == 0) printf("Erreur Semantique: Entite %s n'est pas table(array), a la ligne:%d colonne:%d \n",$1,nb_ligne,col);
+     else if(getTailleTable($1) < $3){
+        printf("Erreur Semantique :  Depassement de la taille d un tableau ligne %d  colonne %d .\n",nb_ligne,col);
+     }
 
 }
-|Constant| '(' Operation ')' ;
-Constant : cst {sauvconst=$1; val.i_val = $1; val.is_i_val = 1;}| reel {sauvfloat=$1; val.f_val = $1; val.is_i_val = 0;};
+|Constant
+| '(' Operation ')' ;
 
-
-// Second Method:
-/* Operation: Operation '+' Exp | Operation '-' Exp | Exp;
-Exp: Value '*' Exp | Value '/' Exp | Value;
-Value: idf | Constant | '(' Operation ')' ; */
-
-/* Comment: Comment_one_line | mc_cmnt_multi;
-Comment_one_line: mc_cmnt_one_line | mc_cmnt_one_line2; */
-
+Constant :
+     cst {
+        sauvconst=$1; val.i_val = $1; val.is_i_val = 1; T[index_Op].i_val=$1;
+        T[index_Op].type_val=0;    //int
+        index_Op++;}
+     | reel {
+        sauvfloat=$1; val.f_val = $1; val.is_i_val = 0; T[index_Op].f_val=$1;
+        T[index_Op].type_val=1;    //float
+        index_Op++;
+        
+        };
 
 Inst_for: mc_for '(' Declaration pvg List_Condition pvg Compteur ')' mc_do List_inst mc_endfor ;
 Declaration:idf affectation Value
-{if(NonDeclaration($1)== -1){printf("Entite %s non declarer ligne:%d colonne:%d \n",$1,nb_ligne,col);}  
+{if(NonDeclaration($1)== -1){printf("Erreur Semantique: Entite %s non declarer ligne:%d colonne:%d \n",$1,nb_ligne,col);}  
 else{ verifierAffectation($1,sauvIdf2);}
 };
 Compteur:idf inc| idf dec;
@@ -235,7 +312,11 @@ Condition:Value Op_comparaison Value;
 
 Op_comparaison:'>' |'<' |sup_ou_egal |inf_ou_egal |egal |diff;
 Op_logiques:mc_ou |mc_et |'!'  ;
-Op_arithmetiques: '-' | '+' | '*' | '/'{strcpy(sauvOp,$1);};
+Op_arithmetiques: 
+                '-' {strcpy(sauvOp,$1); strcpy(V[index_Op_Arith],sauvOp); index_Op_Arith++;}
+                | '+' {strcpy(sauvOp,$1); strcpy(V[index_Op_Arith],sauvOp); index_Op_Arith++;}
+                | '*' {strcpy(sauvOp,$1);  strcpy(V[index_Op_Arith],sauvOp); index_Op_Arith++;}
+                | '/'{strcpy(sauvOp,$1);  strcpy(V[index_Op_Arith],sauvOp); index_Op_Arith++;};
 %%
 main(){
     yyparse();

@@ -8,16 +8,21 @@ typedef struct
     float f_val;
     int is_i_val;
 } ValueType;
+typedef struct
+  {
+        int i_val;
+        float f_val;
+        char s_val[20];
+        int type_val;    //0:int  1:float  2:string
+    } Type_table;
+
+
 
 typedef struct
 {
     char nomEntite[20];
     char codeEntite[20];
     char type[20];
-    // int val;   // "-":pas de val
-    // int i_val;
-    // float f_val;
-    // int is_i_val;
     ValueType val;
     int hasvalue;
     char Constant[4]; // non:n'est pas const     oui :cst
@@ -183,41 +188,6 @@ void inserer(char nomEntite[], char codeEntite[], char type[],char Constant[],in
     }
 }
 
-// listTs recherche(char entite[])
-// {
-//     listTs p = t;
-//     while(p != NULL){
-//         if(strcmp(entite,p->info.nomEntite) == 0){
-//             return p;
-//         }
-//         p = p->suiv;
-//     }
-//     return NULL;
-// }
-
-// void inserer(char entite[], char code[])
-// {
-//     if (recherche(entite) == NULL)
-//     {
-//         if (t == NULL)
-//         {
-//             t = (listTs)malloc(sizeof(celluleTs));
-//             strcpy(t->info.nomEntite, entite);
-//             strcpy(t->info.codeEntite, code);
-//             t->suiv = NULL;
-//             q = t;
-//         }
-//         else
-//         {
-//             listTs nouv = (listTs)malloc(sizeof(celluleTs));
-//             strcpy(nouv->info.nomEntite, entite);
-//             strcpy(nouv->info.codeEntite, code);
-//             nouv->suiv = NULL;
-//             q->suiv = nouv;
-//             q = nouv;
-//         }
-//     }
-// }
 
 void affiche()
 {
@@ -334,14 +304,10 @@ void updateValue(char nomEntite[],ValueType val ){
     listTs p = t;
     while(p != NULL){
         if(strcmp(p->info.nomEntite,nomEntite) == 0){
-            // printf("\n entite %s  %d\n",p->info.nomEntite,f_val);
-            // printf("entite %s has %f",p->info.nomEntite,p->info.f_val);
+            
             p->info.val.is_i_val = val.is_i_val;
             p->info.val.i_val = val.i_val;
             p->info.val.f_val = val.f_val;
-            // p->info.val.is_i_val = value.is_i_val;
-            // p->info.val.i_val = value.i_val;
-            // p->info.val.f_val = value.f_val;
             p->info.hasvalue = 1;
         }
         p = p->suiv;
@@ -400,7 +366,6 @@ int checkTypeFormat(char formatTable[],char idfTable[][50],int size){
     return 0;
 }
 
-// will use it later to make function checkTypeFormat readable
 void searchTypeIdf(char nomEntite[],char typeIdf[]){
     listTs p = t;
     while(p != NULL){
@@ -411,20 +376,6 @@ void searchTypeIdf(char nomEntite[],char typeIdf[]){
     }
 }
 
-// Type | Declaration PART
-
-// int  doubleDeclaration(char nomEntite[]){
-//   //doubleDeclaration--> 0: ok (pas de double dec) c'est une dec pour la premiere fois
-//   //                  -->-1 : c'est une double dec
-// listTs current = t;
-// while (current != NULL) {
-//     if (strcmp(current->info.nomEntite, nomEntite) == 0 && strcmp(current->info.type, "") == 0) {
-//         return 0; 
-//     }
-//     current = current->suiv;
-// }
-// return -1; 
-// }
 
 int  NonDeclaration(char nomEntite[]){
         //si les deux champ sont remplie nomEntite Type   
@@ -443,26 +394,8 @@ return -1; //non dec
 int verifierAffectation(char entite1[], char entite2[]){
     char type1[20];
     char type2[20];
-       
-        listTs current = t; 
-        while (current != NULL) {
-            if (strcmp(current->info.nomEntite, entite1) == 0) {
-                strcpy(type1, current->info.type); 
-                break; 
-            }
-            current = current->suiv; 
-        }
-
-        
-        current = t; 
-        while (current != NULL) {
-            if (strcmp(current->info.nomEntite, entite2) == 0) {
-                strcpy(type2, current->info.type); 
-                break; 
-            }
-            current = current->suiv; 
-        }
-        
+        searchTypeIdf(entite1,type1);
+        searchTypeIdf(entite2,type2);
         return isCompatible(type1, type2);
 }
 
@@ -480,43 +413,128 @@ int isCompatible(char type1[], char type2[]) {
     return -1; 
 }
 
-int getType(char nomEntite[]){
+
+void getvalue(char nomEntite[],int *val_i,float *val_f){
 listTs current = t;
 while (current != NULL) {
     if (strcmp(current->info.nomEntite, nomEntite) == 0) {
-       if(strcmp(current->info.type,"Integer")==0) return 0;
-       if(strcmp(current->info.type,"Float")==0) return 1;
+
+        if (strcmp(current->info.type,"Integer")==0){
+        *val_i=current->info.val.i_val;
+
+        }else if(strcmp(current->info.type,"Float")==0) {
+        *val_f=current->info.val.f_val;
+        }
+
+
+       
     }
     current = current->suiv;
 }
-return -1; //non entite found
+
 }
 
-// int getvalueInt(char nomEntite[]){
-// listTs current = t;
-// while (current != NULL) {
-//     if (strcmp(current->info.nomEntite, nomEntite) == 0) {
-//        return current->info.val;
+int verifierDiv( Type_table T[],char V[][1],int size){
+int i ;
+for(i=0;i<size - 1;i++){
+    
+    if(T[i+1].type_val==0){
+        if(T[i+1].i_val == 0 && V[i][0] == '/'){
+            return -1;
+        }
+    }
+    if(T[i+1].type_val==1){
+        if(T[i+1].f_val == 0 && V[i][0] == '/'){
+            return -1;
+        }
+    }
+    if(T[i+1].type_val==2){
+        int x1;
+        float x2;
+        char x3[20];
+        
+        searchTypeIdf(T[i+1].s_val,x3);
+        
+        getvalue(T[i+1].s_val,&x1,&x2);
+        if(strcmp(x3,"Integer")==0){
+             if(x1 == 0 && V[i][0] == '/'){
+            return -1;
+            }
+            
+        }
+
+        if(strcmp(x3,"Float")==0){
+             if(x2 == 0 && V[i][0] == '/'){
+            return -1;
+            }
+            
+        }
+
+         }
+    }
+    return 0;
+
+}
+
+
+
+
+int checkListCompatible(Type_table T[],char type1[],int size){
+    int i=0;
+    char type2[20];
+
+   while(i<size){
+
+    if(T[i].type_val==0){
+       //integer
+       strcpy(type2,"Integer");
+    }
+    if(T[i].type_val==1){
+        //float
+         strcpy(type2,"Float");
+    }
+    if(T[i].type_val==2){
+        //idf 
+        searchTypeIdf(T[i].s_val,type2);
        
-//     }
-//     current = current->suiv;
-// }
-// return -1; //non entite found
+    }
 
-// }
+        
+        if(isCompatible(type1,type2)!=0){
+            return -1; //un de T[i] n'est pas compatible avec idf1 
+            break;
+        }
+        i++;
+    }
+    return 0; //la table des operandes est compatible avec le idf1
+    
+}
 
-// float getvalueFloat(char nomEntite[]){
-// listTs current = t;
-// while (current != NULL) {
-//     if (strcmp(current->info.nomEntite, nomEntite) == 0) {
-//        return current->info.val;
+int isTable(char nomEntite[]){
+    listTs p = t;
+    while (p != NULL)
+    {
+        if(strcmp(p->info.nomEntite,nomEntite)==0){
+            if(p->info.isTable != 1) return 0;
+            return 1;
+        }
+        p = p->suiv;
+    }
+    return -1; // idf n'existe pas
+  
+}
+
+int getTailleTable( char nomEntite[]){
+
+listTs current = t;
+while (current != NULL) {
+    if (strcmp(current->info.nomEntite, nomEntite) == 0) {
+      return current -> info.taille_table;
        
-//     }
-//     current = current->suiv;
-// }
-// return -1; //non entite found
-
-// }
-
+    }
+    current = current->suiv;
+}
+return -1;
+}
 
 
