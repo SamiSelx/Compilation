@@ -4,34 +4,62 @@ import ISIL.lang;
 Programme L3_ISIL_A
 PDec
 // Declaration des variables
-Float X;
-Integer K;
-Float Z;
-Float T[10];
-final Float H[7] = [7,5,8.5,4];
+
+final Integer T[3]=[1,0,3];
+Float V[10];
+Integer X1;
+Float  X2;
+Integer X3;
+final Integer U=10;
+final Float P;
+Integer I;
+Integer J;
 InDebut
-Write("Hey there %s",Z); // FIX THIIIIS!!!
-For (I<-- 1 ; I<3 ; I++)
+P <-- 1.2;
+
+Input (" %d ", X1);
+Input (" %f ", X2);
+Input (" %d ", X3);
+Write("test : %d  test : %f test : %d",X1,X2,X3);
+
+//AFFECTATION 
+X3 <-- 16;
+X2 <-- 10 + 17 * 15 / (12 + P * 2);
+X1 <-- 12 + (-2) + 6 * 100 - X3;
+
+//DIV PAR ZERO :
+//------indirect------
+X3 <-- 3 / T[1]; //AVEC T[1]=0
+I <-- 0;
+X1 <-- 13 /I;   //AVEC I=0
+//------direct-------
+X1 <-- 4/0 + 15 * 3 ;
+
+
+
+//---------Boucle imbrique ---------
+For(I<-- 0;I<10;I++)
 DO
-IF (X == 1) DO
-//Blocinst1
-For(S<--0; S<=10;S--)
+X3 <-- 16;
+X2 <-- 10 + 17 * 15 / (12 + P * 2);
+X1 <-- 12 + (-2) + 6 * 100 - X3;
+
+For(J <-- 1 ;J<10 ;J++)
 DO 
-S <-- S + 1;
-ENDFOR
+X2 <-- 10 + 17 * 15 / (12 + P * 2);
+ENDFOR 
+
+IF(I<J || X1== X2 &&  X3 != 100)
+DO
+Write("HELLO WORLD !!");
 ELSE
-//Blocinst2
+Write("HELLO ");
 ENDIF
-ENDFOR
-Z<-- 0;
-K <-- 5.4;
-T[5] <-- 4;
-T[2] <-- 10.5;
-H[9] <-- T[5];
-T[0] <-- Z;
-T[45] <--0;
-//Z <-- T[2]/Z + 0/7;
-X <-- T[5];
-//Write("gfgf %d",T[10]);
-// add function allouer to const
+
+ENDFOR 
+
+
+
+
+
 InFin
