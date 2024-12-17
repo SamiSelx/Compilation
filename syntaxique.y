@@ -72,13 +72,18 @@ List_dec:  Type_dec List_dec |;
 Type_dec:
     Type List_idf 
     |mc_const Type idf '=' Constant pvg {
+        char typeConst[20];
+        if(val.is_i_val == 1) strcpy(typeConst,"Integer");
+        if(val.is_i_val == 0) strcpy(typeConst,"Float");
         // Double declaration: entite declarer => double decalaration
-        if (NonDeclaration($3) != 0){ 
+        if (NonDeclaration($3) == 0){ 
+            printf("Erreur Semantique: double declation de %s, a la ligne %d , colonne %d\n", $3, nb_ligne,col);
+        }else if(isCompatible(sauvType,typeConst) == -1){
+            printf("Erreur Semantique : Incompatibilite de types  ligne %d colonne %d\n",nb_ligne,col);
+        }else{
             updateConst($3,"oui");
             updateType($3,sauvType);
             updateValue($3,val);
-        }else{
-            printf("Erreur Semantique: double declation de %s, a la ligne %d , colonne %d\n", $3, nb_ligne,col);
         }
     } 
     |mc_const Type idf pvg {
@@ -94,33 +99,42 @@ Type_dec:
     {
         Type_table arrayType[20];
         convertArrayType(sauvArr,&arrayType,indexArray);
-        updateConst($3,"oui");
-        if($5 <= 0){
-            printf("Erreur semantique: la taille de tableau %s doit etre superieure a 0, a la ligne %d a la colonne %d\n",$3,nb_ligne,col);
-        }if($5 < indexArray) printf("Erreur Semantique :  Depassement de la taille d un tableau ligne %d  colonne %d .\n",nb_ligne,col);
-         else  if (checkListCompatible(arrayType,sauvType,indexArray) ==-1 ){
-                printf("Erreur Semantique (list passed): Incompatibilite de types ligne: %d colonne: %d.\n",nb_ligne,col);
-            }
-            else {
-            int i  = 0;            
-            updateType($3,sauvType); 
-            updateValue($3,val);
-            sauvegarderTailleTable($3,$5);
-            allouerArray($3,$5);
-            while(i<indexArray){
-                updateValueArray($3,sauvArr[i],i);
-                i++;
+         updateConst($3,"oui");
+        if (NonDeclaration($3)==0) {
+            printf("Erreur Semantique: double declation de %s, a la ligne %d , colonne %d\n", $3, nb_ligne,col);
+        }else{
+            if($5 <= 0){
+                printf("Erreur semantique: la taille de tableau %s doit etre superieure a 0, a la ligne %d a la colonne %d\n",$3,nb_ligne,col);
+            }if($5 < indexArray) printf("Erreur Semantique :  Depassement de la taille d un tableau ligne %d  colonne %d .\n",nb_ligne,col);
+            else  if (checkListCompatible(arrayType,sauvType,indexArray) ==-1 ){
+                    printf("Erreur Semantique (list passed): Incompatibilite de types ligne: %d colonne: %d.\n",nb_ligne,col);
+                }
+                else {
+                    int i  = 0;            
+                    updateType($3,sauvType); 
+                    updateValue($3,val);
+                    sauvegarderTailleTable($3,$5);
+                    allouerArray($3,$5);
+                    while(i<indexArray){
+                        updateValueArray($3,sauvArr[i],i);
+                        i++;
+                    }
             }
         }
+            
     } 
     |mc_const Type idf '[' cst ']' pvg {
-        updateConst($3,"oui");
-    if($5 <= 0){
-        printf("Erreur semantique: la taille de tableau %s doit etre strictement superieure a 0, a la ligne %d a la colonne %d\n",$3,nb_ligne,col);
-    }else {
-        updateType($3,sauvType); 
-        sauvegarderTailleTable($3,$5);
-        allouerArray($3,$5);
+    if (NonDeclaration($3)==0) {
+            printf("Erreur Semantique: double declation de %s, a la ligne %d , colonne %d\n", $3, nb_ligne,col);
+        }else {
+            if($5 <= 0){
+             printf("Erreur semantique: la taille de tableau %s doit etre strictement superieure a 0, a la ligne %d a la colonne %d\n",$3,nb_ligne,col);
+            }else {
+                updateConst($3,"oui");
+                updateType($3,sauvType); 
+                sauvegarderTailleTable($3,$5);
+                allouerArray($3,$5);
+            }
     }
     };
 
