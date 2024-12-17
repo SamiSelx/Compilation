@@ -6,7 +6,7 @@ typedef struct
 {
     int i_val;
     float f_val;
-    int is_i_val;
+    int is_i_val; // 0:float 1:int -1: string
 } ValueType;
 
 typedef struct
@@ -515,47 +515,41 @@ while (current != NULL) {
 
 }
 
-int verifierDiv( Type_table T[],char V[][1],int size){
-int i ;
-for(i=0;i<size - 1;i++){
-    
-    if(T[i+1].type_val==0){
-        if(T[i+1].i_val == 0 && V[i][0] == '/'){
-            return -1;
-        }
-    }
-    if(T[i+1].type_val==1){
-        if(T[i+1].f_val == 0 && V[i][0] == '/'){
-            return -1;
-        }
-    }
-    if(T[i+1].type_val==2){
-        int x1;
-        float x2;
-        char x3[20];
-        
-        searchTypeIdf(T[i+1].s_val,x3);
-        
-        getvalue(T[i+1].s_val,&x1,&x2);
-        if(strcmp(x3,"Integer")==0){
-             if(x1 == 0 && V[i][0] == '/'){
-            return -1;
-            }
-            
-        }
+// cette fonction permet de verifier division par zero pour un expression arithmetique
 
-        if(strcmp(x3,"Float")==0){
-             if(x2 == 0 && V[i][0] == '/'){
-            return -1;
-            }
-            
-        }
-
-         }
-    }
-    return 0;
-
-}
+// int verifierDiv( Type_table T[],char V[][1],int size){
+// int i ;
+// for(i=0;i<size - 1;i++){  
+//     if(T[i+1].type_val==0){
+//         if(T[i+1].i_val == 0 && V[i][0] == '/'){
+//             return -1;
+//         }
+//     }
+//     if(T[i+1].type_val==1){
+//         if(T[i+1].f_val == 0 && V[i][0] == '/'){
+//             return -1;
+//         }
+//     }
+//     if(T[i+1].type_val==2){
+//         int x1;
+//         float x2;
+//         char x3[20];
+//         searchTypeIdf(T[i+1].s_val,x3);       
+//         getvalue(T[i+1].s_val,&x1,&x2);
+//         if(strcmp(x3,"Integer")==0){
+//              if(x1 == 0 && V[i][0] == '/'){
+//             return -1;
+//             }
+//         }
+//         if(strcmp(x3,"Float")==0){
+//              if(x2 == 0 && V[i][0] == '/'){
+//             return -1;
+//             }           
+//         }
+//          }
+//     }
+//     return 0;
+// }
 
 
 
@@ -606,16 +600,15 @@ int isTable(char nomEntite[]){
 }
 
 int getTailleTable( char nomEntite[]){
-
-listTs current = t;
-while (current != NULL) {
-    if (strcmp(current->info.nomEntite, nomEntite) == 0) {
-      return current -> info.taille_table;
-       
+    listTs current = t;
+    while (current != NULL) {
+        if (strcmp(current->info.nomEntite, nomEntite) == 0) {
+        return current -> info.taille_table;
+        
+        }
+        current = current->suiv;
     }
-    current = current->suiv;
-}
-return -1;
+    return -1;
 }
 
 
@@ -659,4 +652,16 @@ while (current != NULL) {
     }
     current = current->suiv;
 }
+}
+
+void convertArrayType(ValueType array[],Type_table arrayType[],int size){
+    int i=0;
+    while(i<size){
+        arrayType[i].i_val = array[i].i_val;
+        arrayType[i].f_val = array[i].f_val;
+        if(array[i].is_i_val == 1) arrayType[i].type_val = 0;
+        else if(array[i].is_i_val == 0) arrayType[i].type_val = 1;
+            else  arrayType[i].type_val = 2;
+        i++;
+    }
 }

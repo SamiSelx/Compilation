@@ -8,9 +8,10 @@ Float X;
 Integer K;
 Float Z;
 Float T[10];
-final Float H[10];
+final Float H[7] = [7,5,8.5,4];
 InDebut
 Z<-- 0;
+K <-- 5.4;
 T[5] <-- 4;
 T[2] <-- 10.5;
 H[9] <-- T[5];
