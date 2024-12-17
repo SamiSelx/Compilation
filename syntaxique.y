@@ -13,6 +13,9 @@
         int type_val;    //0:int  1:float  2:idf
     } Type_table;
 
+    ValueType sauvArr[20];
+    int indexArray = 0;
+
     Type_table T[50];
     char V[50][1];
     int nb_ligne=1; 
@@ -28,7 +31,7 @@
     char idfTable[50][50];
     char sauvIdf2[20];
 
-
+    
     int sauvconst=-1;
     float sauvfloat=-1;
     char sauvOp[1];
@@ -87,16 +90,27 @@ Type_dec:
             printf("Erreur Semantique: double declation de %s, a la ligne %d , colonne %d\n", $3, nb_ligne,col);
         }
     };
-    |mc_const Type idf '[' cst ']' '=' Constant pvg 
+    |mc_const Type idf '[' cst ']' '=' '[' List_Const ']' pvg 
     {
+        Type_table arrayType[20];
+        convertArrayType(sauvArr,&arrayType,indexArray);
         updateConst($3,"oui");
         if($5 <= 0){
             printf("Erreur semantique: la taille de tableau %s doit etre superieure a 0, a la ligne %d a la colonne %d\n",$3,nb_ligne,col);
-        }else {
+        }if($5 < indexArray) printf("Erreur Semantique :  Depassement de la taille d un tableau ligne %d  colonne %d .\n",nb_ligne,col);
+         else  if (checkListCompatible(arrayType,sauvType,indexArray) ==-1 ){
+                printf("Erreur Semantique (list passed): Incompatibilite de types ligne: %d colonne: %d.\n",nb_ligne,col);
+            }
+            else {
+            int i  = 0;            
             updateType($3,sauvType); 
             updateValue($3,val);
             sauvegarderTailleTable($3,$5);
             allouerArray($3,$5);
+            while(i<indexArray){
+                updateValueArray($3,sauvArr[i],i);
+                i++;
+            }
         }
     } 
     |mc_const Type idf '[' cst ']' pvg {
@@ -109,6 +123,8 @@ Type_dec:
         allouerArray($3,$5);
     }
     };
+
+List_Const: Constant {sauvArr[indexArray] = val;indexArray++;} ',' List_Const | Constant{sauvArr[indexArray] = val;indexArray++;} ;
 
 List_idf: Var '|' List_idf |Var pvg;
 Var :

@@ -86,33 +86,33 @@ Write {
      col= col + strlen(yytext);
      return mc_write;
 }
-for {
+For {
     inserer(yytext,"mot cle","","",2);
     col= col + strlen(yytext);
     return mc_for;
 }
-endfor {
+ENDFOR {
     inserer(yytext,"mot cle","","",2);
 
      col= col + strlen(yytext);
      return mc_endfor;
 }
-do {
+DO {
    inserer(yytext,"mot cle","","",2);
    col= col + strlen(yytext);
    return mc_do;
 }
-if {
+IF {
    inserer(yytext,"mot cle","","",2);
    col= col + strlen(yytext);
    return mc_if;
 }
-else {
+ELSE {
     inserer(yytext,"mot cle","","",2);
     col= col + strlen(yytext);
     return mc_else;
 }
-endif {
+ENDIF {
     inserer(yytext,"mot cle","","",2);
     col= col + strlen(yytext);
     return mc_endif;
