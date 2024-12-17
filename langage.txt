@@ -15,6 +15,7 @@ final Float P;
 Integer I;
 Integer J;
 InDebut
+
 P <-- 1.2;
 
 Input (" %d ", X1);

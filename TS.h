@@ -614,7 +614,25 @@ while (current != NULL) {
 }
 }
 
-void convertArrayType(ValueType array[],Type_table arrayType[],int size){
+
+int searchValueArray(char nomEntite[],int index){
+   listArray current = tArray;
+while (current != NULL) {
+    if (strcmp(current->info.nomEntite, nomEntite) == 0 && current->info.index == index) {
+    
+       if(current->info.hasvalue==1){
+        return 1;// a une val
+       }
+       else {
+        return 0; //pas de val
+       }
+    }
+    current = current->suiv;
+} 
+    
+    return -1; //autre err
+}
+  void convertArrayType(ValueType array[],Type_table arrayType[],int size){
     int i=0;
     while(i<size){
         arrayType[i].i_val = array[i].i_val;
