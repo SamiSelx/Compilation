@@ -3,7 +3,6 @@ extern int nb_ligne;
 extern int col;
 #include "syntaxique.tab.h"   
 #include "TS.h"
-// int nb_ligne = 1;
 extern YYSTYPE yylval;
 %}
 lettre [a-zA-Z]
@@ -19,121 +18,117 @@ CommentMultiLine (\/\*)([^*]|\*+[^\/])*(\*+\/)
 %%
 import  {
     col= col + strlen(yytext);
-    inserer(yytext,"mot cle","","","",2);
+    inserer(yytext,"mot cle","","",2);
     return mc_import;
 }
-ISIL.math {
-     col= col + strlen(yytext);
-     inserer(yytext,"mot cle","","","",2);
-     return mc_Math;
-}
 ISIL.lang {
-     inserer(yytext,"mot cle","","","",2);
+     inserer(yytext,"mot cle","","",2);
      col= col + strlen(yytext);
      return mc_lang;
 }
 ISIL.io {
-    inserer(yytext,"mot cle","","","",2);
+    inserer(yytext,"mot cle","","",2);
 
     col= col + strlen(yytext);    
     return mc_io;
 }
 Programme {
-     inserer(yytext,"mot cle","","","",2);
+     inserer(yytext,"mot cle","","",2);
 
      col= col + strlen(yytext); 
      return mc_prog;
 }
 PDec {
-     inserer(yytext,"mot cle","","","",2);
+     inserer(yytext,"mot cle","","",2);
 
      col= col + strlen(yytext);
      return mc_dec;
 }
 Integer {
     yylval.str=strdup(yytext);
-     inserer(yytext,"mot cle","","","",2);
+     inserer(yytext,"mot cle","","",2);
 
      col= col + strlen(yytext);
      return mc_integer;
 }
 Float {
     yylval.str=strdup(yytext);
-    inserer(yytext,"mot cle","","","",2);
+    inserer(yytext,"mot cle","","",2);
     col= col + strlen(yytext);
     return mc_float;
 }
 InDebut {
-    inserer(yytext,"mot cle","","","",2);
+    inserer(yytext,"mot cle","","",2);
 
     col= col + strlen(yytext);
     return mc_debut;
 }
 InFin {
-    inserer(yytext,"mot cle","","","",2);
+    inserer(yytext,"mot cle","","",2);
     col= col + strlen(yytext);
     return mc_fin;
 }
 final {
-    inserer(yytext,"mot cle","","","",2);
+    inserer(yytext,"mot cle","","",2);
     col= col + strlen(yytext);
     return mc_const;
 }
 Input {
-    inserer(yytext,"mot cle","","","",2);
+    inserer(yytext,"mot cle","","",2);
 
     col= col + strlen(yytext);
     return mc_input;
 }
 Write {
-     inserer(yytext,"mot cle","","","",2);
+     inserer(yytext,"mot cle","","",2);
 
      col= col + strlen(yytext);
      return mc_write;
 }
-for {
-    inserer(yytext,"mot cle","","","",2);
+For {
+    inserer(yytext,"mot cle","","",2);
     col= col + strlen(yytext);
     return mc_for;
 }
-endfor {
-    inserer(yytext,"mot cle","","","",2);
+ENDFOR {
+    inserer(yytext,"mot cle","","",2);
 
      col= col + strlen(yytext);
      return mc_endfor;
 }
-do {
-   inserer(yytext,"mot cle","","","",2);
+DO {
+   inserer(yytext,"mot cle","","",2);
    col= col + strlen(yytext);
    return mc_do;
 }
-if {
-   inserer(yytext,"mot cle","","","",2);
+IF {
+   inserer(yytext,"mot cle","","",2);
    col= col + strlen(yytext);
    return mc_if;
 }
-else {
-    inserer(yytext,"mot cle","","","",2);
+ELSE {
+    inserer(yytext,"mot cle","","",2);
     col= col + strlen(yytext);
     return mc_else;
 }
-endif {
-    inserer(yytext,"mot cle","","","",2);
+ENDIF {
+    inserer(yytext,"mot cle","","",2);
     col= col + strlen(yytext);
     return mc_endif;
 }
-; { col= col + strlen(yytext); return pvg;}
-"++" { col= col + strlen(yytext); return inc;}
-"--" {col= col + strlen(yytext); return dec;}
-"<--" {col= col + strlen(yytext); return affectation;}
-\>= {col= col + strlen(yytext); return sup_ou_egal;}
-\<= {col= col + strlen(yytext); return inf_ou_egal;}
-"==" {col= col + strlen(yytext); return egal;}
-\!= {col= col + strlen(yytext); return diff;}
-\&\& {col= col + strlen(yytext); return mc_et;}
-"||" {col= col + strlen(yytext); return mc_ou;}
+; { col= col + strlen(yytext); inserer(yytext,"Separateur","","",3); return pvg;}
+"++" { col= col + strlen(yytext); inserer(yytext,"Separateur","","",3); return inc;}
+"--" {col= col + strlen(yytext); inserer(yytext,"Separateur","","",3); return dec;}
+"<--" {col= col + strlen(yytext); inserer(yytext,"Separateur","","",3); return affectation;}
+\>= {col= col + strlen(yytext); inserer(yytext,"Separateur","","",3); return sup_ou_egal;}
+\<= {col= col + strlen(yytext); inserer(yytext,"Separateur","","",3); return inf_ou_egal;}
+"==" {col= col + strlen(yytext); inserer(yytext,"Separateur","","",3); return egal;}
+\!= {col= col + strlen(yytext); inserer(yytext,"Separateur","","",3); return diff;}
+\&\& {col= col + strlen(yytext); inserer(yytext,"Separateur","","",3); return mc_et;}
+"||" {col= col + strlen(yytext); inserer(yytext,"Separateur","","",3); return mc_ou;}
 [\[\]\,\|\+\-\*\/\(\)\<\>\=\!] {
-          inserer(yytext,"Separateur","","","",3);
+          inserer(yytext,"Separateur","","",3);
+          yylval.str = strdup(yytext);
           col= col+1;
           return yytext[0];
 }
@@ -152,14 +147,14 @@ endif {
           yylval.numvrg=atof(yytext);
           return reel;
 }
-{string} {col= col + strlen(yytext); return string;}
+{string} {col= col + strlen(yytext); yylval.str = strdup(yytext); return string;}
 {IDF} {
 col= col + strlen(yytext);
 if (yyleng > 18) {
 printf("Erreur:'%s' depasser 18 caracteres a la ligne %d\n", yytext, nb_ligne);
 } else {
     yylval.str = strdup(yytext);
-    inserer(yytext,"idf","","","",1);
+    inserer(yytext,"idf","","",1);
 return idf;
 }
 }

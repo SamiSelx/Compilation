@@ -1,53 +1,65 @@
-import ISIL.math;
 import ISIL.io;
 import ISIL.lang;
 
 Programme L3_ISIL_A
 PDec
 // Declaration des variables
-Integer X|Y|Z;
-Float A;
-Integer Tab[10];
-final Integer U=10.54;
-final Float U=10;
-Integer T[10]|A[10];
 
+final Integer T[3]=[1,0,3];
+Float V[10];
+Integer X1;
+Float  X2;
+Integer X3;
+final Integer U=10;
+final Float P;
+Integer I;
+Integer J;
 InDebut
-# Partie Instruction
-Y<-- 6 + X - 1 + 4 - 7 * (4 +X + +1.5) + 4; 
-//Input("hey there");
-//Input("hey there d",X);
-//Write ("hey sam");
-//Write ("hey sam",X);
-X<-- 3276;
-/*
-fdfd
-fdfd
-*/
-#fdsfs
-if(X>7 || Y!=6 && Z>=8)do
-X<-- 6*7*5/9;
-Y<-- 6 + X - 1 + 4 - 7 * 4 + X; 
-Y<-- 6 + X - 1; 
-X<-- 6*7*5/9;
-Y<-- 6*X;
-T[10]<-- 6*7*5/9;
-Write ("hey sam");
-Input("hey there");
-else 
-Y<-- 8;
-endif
+P <-- 1.2;
+
+Input (" %d ", X1);
+Input (" %f ", X2);
+Input (" %d ", X3);
+Write("test : %d  test : %f test : %d",X1,X2,X3);
+
+//AFFECTATION 
+X3 <-- 16;
+X2 <-- 10 + 17 * 15 / (12 + P * 2);
+X1 <-- 12 + (-2) + 6 * 100 - X3;
+
+//DIV PAR ZERO :
+//------indirect------
+X3 <-- 3 / T[1]; //AVEC T[1]=0
+I <-- 0;
+X1 <-- 13 /I;   //AVEC I=0
+//------direct-------
+X1 <-- 4/0 + 15 * 3 ;
 
 
-for(X<-- 7;X<7;X--)
-do 
-X<-- -5;
-Y<-- +2;
-Z <-- 54 + 4 - 5;
-endfor
 
-// one line comment
-/* ceci est 
-un commentaire
-isil A */
+//---------Boucle imbrique ---------
+For(I<-- 0;I<10;I++)
+DO
+X3 <-- 16;
+X2 <-- 10 + 17 * 15 / (12 + P * 2);
+X1 <-- 12 + (-2) + 6 * 100 - X3;
+
+For(J <-- 1 ;J<10 ;J++)
+DO 
+X2 <-- 10 + 17 * 15 / (12 + P * 2);
+ENDFOR 
+
+IF(I<J || X1== X2 &&  X3 != 100)
+DO
+Write("HELLO WORLD !!");
+ELSE
+Write("HELLO ");
+ENDIF
+
+ENDFOR 
+
+
+
+
+
 InFin
