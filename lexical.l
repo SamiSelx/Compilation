@@ -117,16 +117,16 @@ ENDIF {
     col= col + strlen(yytext);
     return mc_endif;
 }
-; { col= col + strlen(yytext); return pvg;}
-"++" { col= col + strlen(yytext); return inc;}
-"--" {col= col + strlen(yytext); return dec;}
-"<--" {col= col + strlen(yytext); return affectation;}
-\>= {col= col + strlen(yytext); return sup_ou_egal;}
-\<= {col= col + strlen(yytext); return inf_ou_egal;}
-"==" {col= col + strlen(yytext); return egal;}
-\!= {col= col + strlen(yytext); return diff;}
-\&\& {col= col + strlen(yytext); return mc_et;}
-"||" {col= col + strlen(yytext); return mc_ou;}
+; { col= col + strlen(yytext); inserer(yytext,"Separateur","","",3); return pvg;}
+"++" { col= col + strlen(yytext); inserer(yytext,"Separateur","","",3); return inc;}
+"--" {col= col + strlen(yytext); inserer(yytext,"Separateur","","",3); return dec;}
+"<--" {col= col + strlen(yytext); inserer(yytext,"Separateur","","",3); return affectation;}
+\>= {col= col + strlen(yytext); inserer(yytext,"Separateur","","",3); return sup_ou_egal;}
+\<= {col= col + strlen(yytext); inserer(yytext,"Separateur","","",3); return inf_ou_egal;}
+"==" {col= col + strlen(yytext); inserer(yytext,"Separateur","","",3); return egal;}
+\!= {col= col + strlen(yytext); inserer(yytext,"Separateur","","",3); return diff;}
+\&\& {col= col + strlen(yytext); inserer(yytext,"Separateur","","",3); return mc_et;}
+"||" {col= col + strlen(yytext); inserer(yytext,"Separateur","","",3); return mc_ou;}
 [\[\]\,\|\+\-\*\/\(\)\<\>\=\!] {
           inserer(yytext,"Separateur","","",3);
           yylval.str = strdup(yytext);
