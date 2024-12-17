@@ -3,7 +3,6 @@ extern int nb_ligne;
 extern int col;
 #include "syntaxique.tab.h"   
 #include "TS.h"
-// int nb_ligne = 1;
 extern YYSTYPE yylval;
 %}
 lettre [a-zA-Z]
@@ -86,47 +85,47 @@ Write {
      col= col + strlen(yytext);
      return mc_write;
 }
-for {
+For {
     inserer(yytext,"mot cle","","",2);
     col= col + strlen(yytext);
     return mc_for;
 }
-endfor {
+ENDFOR {
     inserer(yytext,"mot cle","","",2);
 
      col= col + strlen(yytext);
      return mc_endfor;
 }
-do {
+DO {
    inserer(yytext,"mot cle","","",2);
    col= col + strlen(yytext);
    return mc_do;
 }
-if {
+IF {
    inserer(yytext,"mot cle","","",2);
    col= col + strlen(yytext);
    return mc_if;
 }
-else {
+ELSE {
     inserer(yytext,"mot cle","","",2);
     col= col + strlen(yytext);
     return mc_else;
 }
-endif {
+ENDIF {
     inserer(yytext,"mot cle","","",2);
     col= col + strlen(yytext);
     return mc_endif;
 }
-; { col= col + strlen(yytext); return pvg;}
-"++" { col= col + strlen(yytext); return inc;}
-"--" {col= col + strlen(yytext); return dec;}
-"<--" {col= col + strlen(yytext); return affectation;}
-\>= {col= col + strlen(yytext); return sup_ou_egal;}
-\<= {col= col + strlen(yytext); return inf_ou_egal;}
-"==" {col= col + strlen(yytext); return egal;}
-\!= {col= col + strlen(yytext); return diff;}
-\&\& {col= col + strlen(yytext); return mc_et;}
-"||" {col= col + strlen(yytext); return mc_ou;}
+; { col= col + strlen(yytext); inserer(yytext,"Separateur","","",3); return pvg;}
+"++" { col= col + strlen(yytext); inserer(yytext,"Separateur","","",3); return inc;}
+"--" {col= col + strlen(yytext); inserer(yytext,"Separateur","","",3); return dec;}
+"<--" {col= col + strlen(yytext); inserer(yytext,"Separateur","","",3); return affectation;}
+\>= {col= col + strlen(yytext); inserer(yytext,"Separateur","","",3); return sup_ou_egal;}
+\<= {col= col + strlen(yytext); inserer(yytext,"Separateur","","",3); return inf_ou_egal;}
+"==" {col= col + strlen(yytext); inserer(yytext,"Separateur","","",3); return egal;}
+\!= {col= col + strlen(yytext); inserer(yytext,"Separateur","","",3); return diff;}
+\&\& {col= col + strlen(yytext); inserer(yytext,"Separateur","","",3); return mc_et;}
+"||" {col= col + strlen(yytext); inserer(yytext,"Separateur","","",3); return mc_ou;}
 [\[\]\,\|\+\-\*\/\(\)\<\>\=\!] {
           inserer(yytext,"Separateur","","",3);
           yylval.str = strdup(yytext);
