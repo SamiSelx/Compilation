@@ -385,7 +385,7 @@ strcpy(T[index_Op].s_val,$1);
     if (searchValueArray($1,$3)==0){
     printf("Erreur Semantique: La table %s est declarer mais n'a pas une valeur pour l 'index %d . ligne :%d colonne: %d\n",$1,$3,nb_ligne,col);
     }
-
+}
 }
 |Constant
 | '(' Operation ')' ;
