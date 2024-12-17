@@ -10,6 +10,19 @@ Float Z;
 Float T[10];
 final Float H[7] = [7,5,8.5,4];
 InDebut
+Write("Hey there %s",Z); // FIX THIIIIS!!!
+For (I<-- 1 ; I<3 ; I++)
+DO
+IF (X == 1) DO
+//Blocinst1
+For(S<--0; S<=10;S--)
+DO 
+S <-- S + 1;
+ENDFOR
+ELSE
+//Blocinst2
+ENDIF
+ENDFOR
 Z<-- 0;
 K <-- 5.4;
 T[5] <-- 4;

@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
+// Type de Champ Valeur dans la TS
 typedef struct
 {
     int i_val;
@@ -9,6 +10,7 @@ typedef struct
     int is_i_val; // 0:float 1:int -1: string
 } ValueType;
 
+// Type de table utiliser pour analyser l'expression arithmetique
 typedef struct
 {
     int i_val;
@@ -18,7 +20,7 @@ typedef struct
 } Type_table;
 
 
-
+// Types des champ de la TS
 typedef struct
 {
     char nomEntite[20];
@@ -31,12 +33,14 @@ typedef struct
     int isTable;
 } TypeTs;
 
+// Type de la table de séparateur et mot clé
 typedef struct
 {
     char nomEntite[20];
     char codeEntite[20];
 } TypeSM;
 
+// Type pour les champs de Array 
 typedef struct
 {
     int adresse;
@@ -77,19 +81,21 @@ listTs t, q;
 listSM tS, qS;
 listSM tM, qM;
 listArray tArray,qArray;
+
+// Initialise l'adresse de Array
 int adresse = 0;
 
 // appele dans la partie declaration pour reserver les cases
 void allouerArray(char nomEntite[],int taille){
     listArray p = tArray;
     int i = 0;
+    // la premier tuple de Array (initialise la tete)
     if(adresse == 0){
         tArray = (listArray)malloc(sizeof(celluleArray));
         strcpy(tArray->info.nomEntite, nomEntite);
         tArray->info.index = i;
         tArray->info.hasvalue = 0;
         tArray->info.adresse = adresse;
-        // tArray->info.val = NULL;
         tArray->suiv = NULL;
         qArray = tArray;
         i++;
@@ -101,7 +107,6 @@ void allouerArray(char nomEntite[],int taille){
         nouv->info.index = i;
         nouv->info.hasvalue = 0;
         nouv->info.adresse = adresse;
-        // nouv->info.val = NULL;
         nouv->suiv = NULL;
         qArray->suiv = nouv;
         qArray = nouv;
@@ -110,6 +115,7 @@ void allouerArray(char nomEntite[],int taille){
     }
 }
 
+// fonction permet de mettre a jour la valeur dans Array
 void updateValueArray(char nomEntite[],ValueType val,int index){
     listArray p = tArray;
     int i = 0;
@@ -129,6 +135,7 @@ void updateValueArray(char nomEntite[],ValueType val,int index){
     }
 }
 
+// Recherche si l'entite existe dans la TS
 int recherche(char nomEntite[], int y)
 {
     switch (y)
@@ -178,6 +185,7 @@ int recherche(char nomEntite[], int y)
     return -1;
 }
 
+// Insertion de cellule dans la TS
 void inserer(char nomEntite[], char codeEntite[], char type[],char Constant[],int y)
 {
     if (recherche(nomEntite, y) == -1)
@@ -259,7 +267,7 @@ void inserer(char nomEntite[], char codeEntite[], char type[],char Constant[],in
     }
 }
 
-
+// Affichage TS
 void affiche()
 {
     printf("\n\n/***************Table des symboles IDF*************/\n");
@@ -295,7 +303,7 @@ void affiche()
     printf("\t| NomEntite | CodeEntite | \n");
 
     printf("____________________________________\n");
-    if (t == NULL)
+    if (tM == NULL)
     {
         printf("liste est vide");
     }
@@ -318,7 +326,7 @@ void affiche()
     printf("\t| NomEntite | CodeEntite | \n");
 
     printf("____________________________________\n");
-    if (t == NULL)
+    if (tS == NULL)
     {
         printf("liste est vide");
     }
@@ -359,6 +367,7 @@ void affiche()
     printf("____________________________________\n");
 }
 
+// fonction permet de mettre a jour le type de variable
 void updateType(char nomEntite[], char newType[]) {
 
     listTs current = t;
@@ -371,6 +380,7 @@ void updateType(char nomEntite[], char newType[]) {
     }
 }
 
+// fonction permet de mettre a jour le champ constante
 void updateConst(char nomEntite[], char cst[]) {
    
     listTs current = t;
@@ -382,8 +392,7 @@ void updateConst(char nomEntite[], char cst[]) {
     }
 }
 
-// check constant | updating Values PART
-
+// fonction permet de verifier si le constant a une valeur, si oui:0, non:-1
 int checkConstValue(char nomEntite[]){
     listTs p = t;
     while(p != NULL){
@@ -396,7 +405,7 @@ int checkConstValue(char nomEntite[]){
     return -1;
 }
 
-
+// fonction permet de sauvegarder la taille d'une tableau dans la TS
 void sauvegarderTailleTable(char nomEntite[],int taille){
     listTs p = t;
     while(p != NULL){
@@ -408,11 +417,14 @@ void sauvegarderTailleTable(char nomEntite[],int taille){
     }
 }
 
+// fonction permet de verifier si le nombre de variable égale a nombre de formatage (%d|%f)
 int checkNumberVariable(char string[],int numberVariable,char formatTable[]){
     int numberFormat = 0;
     int i = 0;
+    // chercher les formats %* et on sauvegarde dans la table formatTable
     while(string[i] != '\0'){
-        if(string[i] == '%' && (string[i+1] == 'd' || string[i+1] == 'f' || string[i+1] == 's' || string[i+1] == 'c')){
+        // Future: ajoute cette condition string[i+1] == 's' || string[i+1] == 'c'
+        if(string[i] == '%' && (string[i+1] == 'd' || string[i+1] == 'f')){
             formatTable[numberFormat] = string[i+1];
             numberFormat++;
         };
@@ -422,6 +434,7 @@ int checkNumberVariable(char string[],int numberVariable,char formatTable[]){
     return -1;
 }
 
+// fonction permet de verifier compatibilité des types entre format et le type de variable
 int checkTypeFormat(char formatTable[],char idfTable[][50],int size){
     int i=0;
     char typeIdf[20];
@@ -449,6 +462,7 @@ int checkTypeFormat(char formatTable[],char idfTable[][50],int size){
     return 0;
 }
 
+// Procédure permet de sauvegarder le type de l'IDF dans la variable typeIdf
 void searchTypeIdf(char nomEntite[],char typeIdf[]){
     listTs p = t;
     while(p != NULL){
@@ -459,27 +473,27 @@ void searchTypeIdf(char nomEntite[],char typeIdf[]){
     }
 }
 
-
+// fonction permet de verifier si l'IDF a été déja déclarer: oui:0, non:-1
 int  NonDeclaration(char nomEntite[]){
-        //si les deux champ sont remplie nomEntite Type   
-listTs current = t;
-while (current != NULL) {
-    if (strcmp(current->info.nomEntite, nomEntite) == 0) {
-        if(strcmp(current->info.type, "") != 0) return 0; //declarer
-        return -1;//non dec
+    //si les deux champ sont remplie nomEntite Type   
+    listTs current = t;
+    while (current != NULL) {
+        if (strcmp(current->info.nomEntite, nomEntite) == 0) {
+            if(strcmp(current->info.type, "") != 0) return 0; //declarer
+            return -1;//non dec
+        }
+        current = current->suiv;
     }
-    current = current->suiv;
-}
-return -1; //non dec
+    return -1; //non dec
 }
 
-
+// fonction permet de verifier compatibilité de type entre deux variable
 int verifierAffectation(char entite1[], char entite2[]){
     char type1[20];
     char type2[20];
-        searchTypeIdf(entite1,type1);
-        searchTypeIdf(entite2,type2);
-        return isCompatible(type1, type2);
+    searchTypeIdf(entite1,type1);
+    searchTypeIdf(entite2,type2);
+    return isCompatible(type1, type2);
 }
 
 int isCompatible(char type1[], char type2[]) {
@@ -496,7 +510,7 @@ int isCompatible(char type1[], char type2[]) {
     return -1; 
 }
 
-
+// Procédure permet de sauvegarder la valeur d'une entité dans val_i et val_f
 void getvalue(char nomEntite[],int *val_i,float *val_f){
 listTs current = t;
 while (current != NULL) {
@@ -553,7 +567,7 @@ while (current != NULL) {
 
 
 
-
+// fonction permet de vérifier compatibilité de type en utilisant ensemble des valeurs 
 int checkListCompatible(Type_table T[],char type1[],int size){
     int i=0;
     char type2[20];
@@ -577,7 +591,6 @@ int checkListCompatible(Type_table T[],char type1[],int size){
         
         if(isCompatible(type1,type2)!=0){
             return -1; //un de T[i] n'est pas compatible avec idf1 
-            break;
         }
         i++;
     }
@@ -585,6 +598,7 @@ int checkListCompatible(Type_table T[],char type1[],int size){
     
 }
 
+// Fonction permet de vérifier si l'entité est une table
 int isTable(char nomEntite[]){
     listTs p = t;
     while (p != NULL)
@@ -599,6 +613,7 @@ int isTable(char nomEntite[]){
   
 }
 
+// fonction retourne la taille de tableau
 int getTailleTable( char nomEntite[]){
     listTs current = t;
     while (current != NULL) {
@@ -611,7 +626,7 @@ int getTailleTable( char nomEntite[]){
     return -1;
 }
 
-
+// Procédure permet de mettre a jour la valeur d'une entité
 void updateValue(char nomEntite[],ValueType val ){
     listTs p = t;
     while(p != NULL){
@@ -642,6 +657,8 @@ void updateValue(char nomEntite[],ValueType val ){
         p = p->suiv;
     }
 }
+
+// Procédure permet de sauvegarder la valeur de Array dans val
 void getvalueArray(char nomEntite[],int index,ValueType *val){
 listArray current = tArray;
 while (current != NULL) {
