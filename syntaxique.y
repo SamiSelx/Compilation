@@ -15,7 +15,6 @@
 
     ValueType sauvArr[20];
     int indexArray = 0;
-
     Type_table T[50];
     char V[50][1];
     int nb_ligne=1; 
@@ -30,8 +29,6 @@
     char formatTable[50];
     char idfTable[50][50];
     char sauvIdf2[20];
-
-    
     int sauvconst=-1;
     float sauvfloat=-1;
     char sauvOp[1];
@@ -102,7 +99,6 @@ Type_dec:
     };
     |mc_const Type idf '[' cst ']' '=' '[' List_Const ']' pvg 
     {
-        
         Type_table arrayType[20];
         convertArrayType(sauvArr,&arrayType,indexArray);
         updateConst($3," ");
@@ -119,7 +115,6 @@ Type_dec:
                     int i  = 0;   
                     updateConst($3,"oui");         
                     updateType($3,sauvType); 
-                    updateValue($3,val);
                     sauvegarderTailleTable($3,$5);
                     allouerArray($3,$5);
                     while(i<indexArray){
@@ -152,6 +147,7 @@ List_idf: Var '|' List_idf |Var pvg;
 Var :
 idf 
 {
+    updateConst($1," "); 
 if (NonDeclaration($1)!=0){ 
     updateConst($1,"non"); 
     updateType($1,sauvType); 
@@ -161,6 +157,7 @@ if (NonDeclaration($1)!=0){
  }
 | idf '[' cst ']'
  {
+    updateConst($1," "); 
 if (NonDeclaration($1)!=0) {
     updateConst($1," ");
   if($3 <= 0){
@@ -223,11 +220,19 @@ Inst_write: mc_write '(' string ')' pvg
 
 //--------------------------------------------------------------------
 List_idf_io: idf ',' List_idf_io 
-        {   
+        { 
+            if(NonDeclaration($1)== -1){
+                updateConst($1,"");
+                printf("Erreur Semantique: Entite %s non declarer ligne:%d colonne:%d \n",$1,nb_ligne,col);  
+            }
             strcpy(idfTable[indexIdf],$1);
             indexIdf++;
         }
         | idf {
+            if(NonDeclaration($1)== -1){
+                updateConst($1,"");
+                printf("Erreur Semantique: Entite %s non declarer ligne:%d colonne:%d \n",$1,nb_ligne,col);  
+            }
             strcpy(idfTable[indexIdf],$1);
             indexIdf++
          };
@@ -283,8 +288,6 @@ Inst_aff: idf affectation {index_Op_Arith=0; index_Op=0;}Operation  pvg
         printf("Erreur Semantique :  Depassement de la taille d un tableau ligne %d  colonne %d .\n",nb_ligne,col);
      }
 
-
-
 //Tout les verifications sont fait avant de passer vers l'affectation  
     else {
         char type1[20];
@@ -297,7 +300,6 @@ Inst_aff: idf affectation {index_Op_Arith=0; index_Op=0;}Operation  pvg
        if(isCompatible(type1,type2) == -1 && index_Op==1){
         printf("Erreur Semantique: (one arg passed): Incompatibilite de types  ligne %d colonne %d\n",nb_ligne,col);
         }else {
-            // updateValue($1,val);
             updateValueArray($1,val,$3);
       }
 
@@ -314,11 +316,12 @@ Inst_aff: idf affectation {index_Op_Arith=0; index_Op=0;}Operation  pvg
 };
     
 //--------------------------------------------------------------------------------   
-Operation: Value {    
+Operation: Value { 
+    // Division par Zero
     if(strcmp(sauvOp,"/")==0 && (sauvconst==0 || sauvfloat==0)){
         printf("Erreur Semantique: Division par zero, a la ligne:%d colonne:%d \n",nb_ligne,col);
         sauvconst = -1; sauvfloat=-1;  
-    }  
+    } 
     } Op_arithmetiques Operation 
 
  | Value
@@ -371,6 +374,13 @@ strcpy(T[index_Op].s_val,$1);
        }
     else{
         getvalueArray($1,$3,&val);
+        if(val.is_i_val == 1){
+            sauvconst = val.i_val;
+            sauvfloat = -1;
+        }else{
+            sauvfloat=  val.f_val ;
+            sauvconst = -1;
+        }
     }
 
 }
