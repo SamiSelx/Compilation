@@ -60,15 +60,18 @@
 
 %start S
 %%
+//-------La partie declaration  Bibliotheque-----------
 S: List_import Programme {printf("syntaxe correcte");
                 YYACCEPT;};
 List_import: mc_import Lib pvg List_import | ;              
 Lib:  mc_lang {lang_lib = 1;} |mc_io {io_lib = 1};
 
+//-----------La partie PROGRAMME ----------------------
 Programme: mc_prog idf Dec Corps;
 Dec: mc_dec List_dec;
 List_dec:  Type_dec List_dec |;
 
+//----------La partie_Type Declaration ----------------
 Type_dec:
     Type List_idf 
     |mc_const Type idf '=' Constant pvg {
@@ -177,6 +180,8 @@ else
 Type:mc_integer {strcpy(sauvType,$1)}|mc_float {strcpy(sauvType,$1)};
 
 
+
+//------------------Partie Corps de Programme ----------------------
 Corps: mc_debut List_inst mc_fin;
 
 List_inst: Inst_aff {
@@ -189,8 +194,9 @@ List_inst: Inst_aff {
             if(io_lib == 0) printf("Erreur semantique: bibliotheque ISIL.io n'est pas declarer, a la ligne %d a la colonne %d\n",nb_ligne,col);
             }  List_inst 
         | Inst_for List_inst 
-        |   Inst_if List_inst | ;
+        | Inst_if List_inst | ;
 
+//-------------------------------------------------------------------
 Inst_lecture: mc_input '(' string ')' pvg 
             | mc_input '(' string ',' {indexIdf = 0;} List_idf_io')' pvg
             {   
@@ -202,6 +208,8 @@ Inst_lecture: mc_input '(' string ')' pvg
                     }
                 }
             }; 
+
+//-------------------------------------------------------------------
 Inst_write: mc_write '(' string ')' pvg 
     | mc_write '(' string ',' {indexIdf = 0;} List_idf_io ')' pvg 
     {if(checkNumberVariable($3,indexIdf,formatTable) == -1){
@@ -212,6 +220,8 @@ Inst_write: mc_write '(' string ')' pvg
         }
     }
     }; 
+
+//--------------------------------------------------------------------
 List_idf_io: idf ',' List_idf_io 
         {   
             strcpy(idfTable[indexIdf],$1);
@@ -220,7 +230,9 @@ List_idf_io: idf ',' List_idf_io
         | idf {
             strcpy(idfTable[indexIdf],$1);
             indexIdf++
-            };
+         };
+
+//---------------------------------------------------------------------
 Inst_aff: idf affectation {index_Op_Arith=0; index_Op=0;}Operation  pvg 
 {
     strcpy(sauvOp,"");
@@ -232,7 +244,7 @@ Inst_aff: idf affectation {index_Op_Arith=0; index_Op=0;}Operation  pvg
         {
             printf("Erreur semantique: modification de la valeur d'une constante %s a la ligne %d a la colonne %d \n",$1,nb_ligne,col);
         }
-    else if(isTable($1) != 0) printf("Erreur Semantique: Entite %s n'est pas un variable simple (est une table), a la ligne:%d colonne:%d \n",$1,nb_ligne,col);
+    else if(isTable($1) != 0) printf("Erreur Semantique: Entite %s n'est pas une variable simple (mais une table), a la ligne:%d colonne:%d \n",$1,nb_ligne,col);
      else {
         char type1[20];
         char type2[20];
@@ -264,7 +276,7 @@ Inst_aff: idf affectation {index_Op_Arith=0; index_Op=0;}Operation  pvg
     if(NonDeclaration($1)== -1){updateConst($1,""); printf("Erreur Semantique: Entite %s non declarer ligne:%d colonne:%d \n",$1,nb_ligne,col);  }
     else if(checkConstValue($1) == 0) 
     {printf("Erreur semantique: modification de la valeur d'une constante a la ligne %d a la colonne %d \n",nb_ligne,col);}
-    else if(isTable($1) == 0) printf("Erreur Semantique: Entite %s n'est pas table(array), a la ligne:%d colonne:%d \n",$1,nb_ligne,col);
+    else if(isTable($1) == 0) printf("Erreur Semantique: Entite %s  n'est pas table(array), a la ligne:%d colonne:%d \n",$1,nb_ligne,col);
     
     //LE CAS : T[10] <-- UNE VAL  MAIS LA TABLE ET DE T[3]  3<10
      else if(getTailleTable($1) < $3){
@@ -301,7 +313,7 @@ Inst_aff: idf affectation {index_Op_Arith=0; index_Op=0;}Operation  pvg
 
 };
     
-    
+//--------------------------------------------------------------------------------   
 Operation: Value {    
     if(strcmp(sauvOp,"/")==0 && (sauvconst==0 || sauvfloat==0)){
         printf("Erreur Semantique: Division par zero, a la ligne:%d colonne:%d \n",nb_ligne,col);
@@ -317,6 +329,8 @@ Operation: Value {
         }  
     } ;
 
+
+//--------------------------------------------------------------------------------
 Value: idf 
 {
 strcpy(sauvIdf2,$1);
@@ -328,7 +342,7 @@ strcpy(T[index_Op].s_val,$1);
     if(NonDeclaration($1) == -1) {
         updateConst($1,"");
         printf("Erreur Semantique: Entite %s non declarer ligne:%d colonne:%d \n",$1,nb_ligne,col);  
-    } if(isTable($1) != 0) printf("Erreur Semantique: Entite %s n'est pas un variable simple (est une table), a la ligne:%d colonne:%d \n",$1,nb_ligne,col);
+    } if(isTable($1) != 0) printf("Erreur Semantique: Entite %s n'est pas une variable simple (mais une table), a la ligne:%d colonne:%d \n",$1,nb_ligne,col);
     else {
         char typeIdf[20];
         getvalue($1,&sauvconst,&sauvfloat);
@@ -363,6 +377,8 @@ strcpy(T[index_Op].s_val,$1);
 |Constant
 | '(' Operation ')' ;
 
+
+//-------------------------------------------------------------
 Constant :
      cst {
         sauvconst=$1; val.i_val = $1; val.is_i_val = 1; T[index_Op].i_val=$1;
@@ -375,6 +391,7 @@ Constant :
         
         };
 
+//--------------------INST_FOR --------------------------------
 Inst_for: mc_for '(' Declaration pvg List_Condition pvg Compteur ')' mc_do List_inst mc_endfor ;
 Declaration:idf affectation Value
 {if(NonDeclaration($1)== -1){printf("Erreur Semantique: Entite %s non declarer ligne:%d colonne:%d \n",$1,nb_ligne,col);}  
@@ -382,13 +399,15 @@ else{ verifierAffectation($1,sauvIdf2);}
 };
 Compteur:idf inc| idf dec;
 
-
+//----------------------INST_IF -------------------------------
 Inst_if: mc_if '(' List_Condition ')' mc_do List_inst mc_endif|Inst_if_else;
 Inst_if_else: mc_if '(' List_Condition ')' mc_do List_inst mc_else List_inst mc_endif;
 List_Condition: Condition| Condition Op_logiques List_Condition ;
 Condition:Value Op_comparaison Value;
 
 
+
+//--------------TOUT LES OPERATIONS ----------------------
 Op_comparaison:'>' |'<' |sup_ou_egal |inf_ou_egal |egal |diff;
 Op_logiques:mc_ou |mc_et |'!'  ;
 Op_arithmetiques: 
