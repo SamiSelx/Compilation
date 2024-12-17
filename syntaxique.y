@@ -75,6 +75,7 @@ Type_dec:
         char typeConst[20];
         if(val.is_i_val == 1) strcpy(typeConst,"Integer");
         if(val.is_i_val == 0) strcpy(typeConst,"Float");
+        updateConst($3," ");
         // Double declaration: entite declarer => double decalaration
         if (NonDeclaration($3) == 0){ 
             printf("Erreur Semantique: double declation de %s, a la ligne %d , colonne %d\n", $3, nb_ligne,col);
@@ -87,6 +88,7 @@ Type_dec:
         }
     } 
     |mc_const Type idf pvg {
+        updateConst($3," ");
         // Double declaration: entite declarer => double decalaration
         if (NonDeclaration($3)!=0){ 
           updateConst($3,"oui");
@@ -97,9 +99,10 @@ Type_dec:
     };
     |mc_const Type idf '[' cst ']' '=' '[' List_Const ']' pvg 
     {
+        
         Type_table arrayType[20];
         convertArrayType(sauvArr,&arrayType,indexArray);
-         updateConst($3,"oui");
+        updateConst($3," ");
         if (NonDeclaration($3)==0) {
             printf("Erreur Semantique: double declation de %s, a la ligne %d , colonne %d\n", $3, nb_ligne,col);
         }else{
@@ -110,7 +113,8 @@ Type_dec:
                     printf("Erreur Semantique (list passed): Incompatibilite de types ligne: %d colonne: %d.\n",nb_ligne,col);
                 }
                 else {
-                    int i  = 0;            
+                    int i  = 0;   
+                    updateConst($3,"oui");         
                     updateType($3,sauvType); 
                     updateValue($3,val);
                     sauvegarderTailleTable($3,$5);
@@ -124,6 +128,7 @@ Type_dec:
             
     } 
     |mc_const Type idf '[' cst ']' pvg {
+        updateConst($3," ");
     if (NonDeclaration($3)==0) {
             printf("Erreur Semantique: double declation de %s, a la ligne %d , colonne %d\n", $3, nb_ligne,col);
         }else {
