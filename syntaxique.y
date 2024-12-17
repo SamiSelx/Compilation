@@ -249,46 +249,45 @@ Inst_aff: idf affectation {index_Op_Arith=0; index_Op=0;}Operation  pvg
         {
             printf("Erreur semantique: modification de la valeur d'une constante %s a la ligne %d a la colonne %d \n",$1,nb_ligne,col);
         }
-    else if(isTable($1) != 0) printf("Erreur Semantique: Entite %s n'est pas une variable simple (mais une table), a la ligne:%d colonne:%d \n",$1,nb_ligne,col);
-     else {
-        char type1[20];
-        char type2[20];
-        searchTypeIdf($1,type1);
-        if(val.is_i_val==1) strcpy(type2,"Integer");
-        if(val.is_i_val==0) strcpy(type2,"Float");
-        if(val.is_i_val==-1) searchTypeIdf(sauvIdf2,type2);
+        else if(isTable($1) != 0) printf("Erreur Semantique: Entite %s n'est pas une variable simple (mais une table), a la ligne:%d colonne:%d \n",$1,nb_ligne,col);
+        else {
+            char type1[20];
+            char type2[20];
+            searchTypeIdf($1,type1);
+            if(val.is_i_val==1) strcpy(type2,"Integer");
+            if(val.is_i_val==0) strcpy(type2,"Float");
+            if(val.is_i_val==-1) searchTypeIdf(sauvIdf2,type2);
 
-//LE CAS: IDF<--- UN SEULE ARGUMENT 
-       if(isCompatible(type1,type2) == -1 && index_Op==1){
-            printf("Erreur Semantique (one arg passed): Incompatibilite de types  ligne %d colonne %d\n",nb_ligne,col);
-        }else {
-            updateValue($1,val);
-         }
-         
-//LE CAS : IDF <-- LIST _AFFECT
-        if(strcmp(type1,"Integer")==0 && index_Op>1){
-        // on verifie type1='integer'?  ---> le float accept tout affect (int or float ) on a pas le cas string pour le verifier
-       if (checkListCompatible(T,type1,index_Op)==-1 ){
-        printf("Erreur Semantique (list passed): Incompatibilite de types ligne: %d colonne: %d.\n",nb_ligne,col);
+            //LE CAS: IDF<--- UN SEULE ARGUMENT 
+            if(isCompatible(type1,type2) == -1 && index_Op==1){
+                printf("Erreur Semantique (one arg passed): Incompatibilite de types  ligne %d colonne %d\n",nb_ligne,col);
+            }else {
+                updateValue($1,val);
+            }
+            
+            //LE CAS : IDF <-- LIST _AFFECT
+            if(strcmp(type1,"Integer")==0 && index_Op>1){
+                // on verifie type1='integer'?  ---> le float accept tout affect (int or float ) on a pas le cas string pour le verifier
+                if (checkListCompatible(T,type1,index_Op)==-1 ){
+                    printf("Erreur Semantique (list passed): Incompatibilite de types ligne: %d colonne: %d.\n",nb_ligne,col);
+                }
+            }
        }
-       }
-
-
-       } 
 }
     | idf '[' cst ']' affectation  Operation pvg
     {   
-    if(NonDeclaration($1)== -1){updateConst($1,""); printf("Erreur Semantique: Entite %s non declarer ligne:%d colonne:%d \n",$1,nb_ligne,col);  }
+    if(NonDeclaration($1)== -1){
+        updateConst($1,"");
+        printf("Erreur Semantique: Entite %s non declarer ligne:%d colonne:%d \n",$1,nb_ligne,col);  
+    }
     else if(checkConstValue($1) == 0) 
-    {printf("Erreur semantique: modification de la valeur d'une constante a la ligne %d a la colonne %d \n",nb_ligne,col);}
+        {printf("Erreur semantique: modification de la valeur d'une constante a la ligne %d a la colonne %d \n",nb_ligne,col);}
     else if(isTable($1) == 0) printf("Erreur Semantique: Entite %s  n'est pas table(array), a la ligne:%d colonne:%d \n",$1,nb_ligne,col);
-    
     //LE CAS : T[10] <-- UNE VAL  MAIS LA TABLE ET DE T[3]  3<10
      else if(getTailleTable($1) < $3){
-        printf("Erreur Semantique :  Depassement de la taille d un tableau ligne %d  colonne %d .\n",nb_ligne,col);
-     }
-
-//Tout les verifications sont fait avant de passer vers l'affectation  
+            printf("Erreur Semantique :  Depassement de la taille d un tableau ligne %d  colonne %d .\n",nb_ligne,col);
+        }
+    //Tout les verifications de type avec l'expression 
     else {
         char type1[20];
         char type2[20];
@@ -296,21 +295,20 @@ Inst_aff: idf affectation {index_Op_Arith=0; index_Op=0;}Operation  pvg
         if(val.is_i_val==1) strcpy(type2,"Integer");
         if(val.is_i_val==0) strcpy(type2,"Float");
         if(val.is_i_val==-1) searchTypeIdf(sauvIdf2,type2);
-//LE CAS: T[cst]<--- UN SEULE ARGUMENT 
+
+        //LE CAS: T[cst]<--- UN SEULE ARGUMENT 
        if(isCompatible(type1,type2) == -1 && index_Op==1){
-        printf("Erreur Semantique: (one arg passed): Incompatibilite de types  ligne %d colonne %d\n",nb_ligne,col);
-        }else {
-            updateValueArray($1,val,$3);
-      }
+            printf("Erreur Semantique: (one arg passed): Incompatibilite de types  ligne %d colonne %d\n",nb_ligne,col);
+        }else updateValueArray($1,val,$3);
 
          
-//LE CAS : T[cst] <-- LIST _AFFECT
+        //LE CAS : T[cst] <-- LIST _AFFECT
         if(strcmp(type1,"Integer")==0 && index_Op>1){
-        // on verifie type1='integer'?  ---> le float accept tout affect (int or float ) on a pas le cas string pour le verifier
-       if (checkListCompatible(T,type1,index_Op)==-1 ){
-        printf("Erreur Semantique: (list passed): Incompatibilite de types ligne: %d colonne: %d.\n",nb_ligne,col);
-       }
-       }
+            // on verifie type1='integer'?  ---> le float accept tout affect (int or float ) on a pas le cas string pour le verifier
+            if (checkListCompatible(T,type1,index_Op)==-1 ){
+                printf("Erreur Semantique: (list passed): Incompatibilite de types ligne: %d colonne: %d.\n",nb_ligne,col);
+            }
+        }
 } 
 
 };
